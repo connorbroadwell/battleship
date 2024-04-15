@@ -182,8 +182,8 @@ button.silly-font:hover {
 }
 
 .cell {
-  width: 32px;
-  height: 32px;
+  width: 29px;
+  height: 29px;
   border: 1px #7e22ce solid;
 }
 
@@ -206,13 +206,39 @@ button.silly-font:hover {
   background-color: #0284c7;
 }
 
-.ship-4 {
-  width: 128px;
-  background-image: url(./assets/4ship.png);
+.ship-start {
+  background-image: url(assets/NEW_START.png);
+}
+
+.ship-mid-1 {
+  background-image: url(assets/NEW_MID_1.png);
+}
+
+.ship-mid-2 {
+  background-image: url(assets/NEW_MID_2.png);
+}
+.ship-end {
+  background-image: url(assets/NEW_END.png);
+}
+
+.single {
+  background-color: #db2777;
+}
+
+.double {
+  background-color: #e11d48;
+}
+
+.triple {
+  background-color: #0284c7;
 }
 
 .quadruple {
   background-color: #4338ca;
+}
+
+.rotate {
+  rotate: 90deg;
 }
 
 .miss {

@@ -55,12 +55,25 @@ function getClassNameOfTheCurrentShip() {
   return null;
 }
 
-function styleShipPlacement(cellsArr) {
+function styleShipPlacement(cellsArr, rotate) {
   for (let i = 0; i < cellsArr.length; i += 1) {
     if (cellsArr[i] === null) return;
     if (i === 0) {
-      cellsArr[i].classList.add("ship-4");
-      return;
+      cellsArr[i].classList.add("ship-start");
+    }
+    if (i === 1) {
+      cellsArr[i].classList.add("ship-mid-1");
+    }
+    if (i === 2) {
+      cellsArr[i].classList.add("ship-mid-2");
+    }
+    if (i === cellsArr.length - 1) {
+      cellsArr[i].classList.add("ship-end");
+    }
+    cellsArr[i].classList.add(getClassNameOfTheCurrentShip());
+
+    if (rotate) {
+      cellsArr[i].classList.add("rotate");
     }
   }
 }
