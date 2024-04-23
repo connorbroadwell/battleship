@@ -150,7 +150,8 @@ function addCellEventListeners(cell, cellsArr) {
   });
 }
 
-function tagCells(table, cellsArr) {
+function tagCells(table) {
+  const cellsArr = [];
   for (let i = 1; i < table.rows.length; i += 1) {
     for (let k = 1; k < table.rows[i].cells.length; k += 1) {
       const cell = table.rows[i].cells[k];
@@ -178,9 +179,7 @@ function renderGameBoard1(rotate = false) {
 
   const p1Table = document.querySelector(".player1-board-content").children[0];
 
-  const cells = [];
-
-  tagCells(p1Table, cells);
+  tagCells(p1Table);
 }
 
 function renderGameBoard2(rotate = false) {
@@ -236,10 +235,6 @@ function styleAttacks() {
       }
     }
   }
-}
-
-function unRenderShips() {
-  renderGameBoards(false);
 }
 
 function renderGameBoards(firstRun = true) {
@@ -382,4 +377,4 @@ Storage().initShipCoords();
 renderNameSelection();
 addNameSubmitBtnEventListeners();
 
-export { unRenderShips, styleAttacks };
+export { styleAttacks };
