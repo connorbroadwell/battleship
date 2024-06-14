@@ -5,22 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>battleship</title>
     <script src="./bundle.js" defer></script>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div id="content">
+    <div class="body-wrap">
+      <header class="flex">
+        <div class="title-wrap">
+          <div class="title">Jellyship Battle</div>
+        </div>
+        <div class="notification-wrap">
+          <div class="notification">
+            <div class="notification-message">Place your/yalls ships</div>
+          </div>
+        </div>
+      </header>
       <main>
-        <header class="flex">
-          <div class="title-wrap">
-            <div class="title">Jellyship Battle</div>
+        <div class="battlefields">
+          <div class="battlefield battlefield-self">
+            <table class="battlefield-table"></table>
+            <div class="battlefield-label"></div>
           </div>
-          <div class="notification-wrap">
-            <div class="notification">
-              <div class="notification-message">
-                Place your/yalls ships
-              </div>
-            </div>
+          <div class="battlefield battlefield-rival">
+            <table class="battlefield-table"></table>
+            <div class="battlefield-label"></div>
           </div>
-        </header>
+        </div>
+      </main>
+      <footer>© now-forever snowjellyIndustries</footer>
     </div>
   </body>
 </html>
