@@ -1,1 +1,5 @@
 node_modules
+flake.nix
+.direnv
+.envrc
+shell.nix
