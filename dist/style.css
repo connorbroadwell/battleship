@@ -159,8 +159,7 @@ footer {
 .battlefields {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  column-gap: 4rem;
+  row-gap: 3rem;
   padding-top: 2rem;
 }
 
@@ -171,9 +170,6 @@ footer {
 }
 
 .battlefield-table {
-  min-height: 340px;
-  min-width: 340px;
-  position: relative;
 }
 
 .battlefield-cell {
@@ -186,8 +182,8 @@ footer {
 }
 
 .battlefield-cell-content {
-  height: 2em;
-  width: 2em;
+  height: 2rem;
+  width: 2rem;
 }
 
 .title {
@@ -198,6 +194,7 @@ footer {
 .flex-col {
   display: flex;
   flex-direction: column;
+  padding: 1rem;
 }
 
 .title-wrap {
