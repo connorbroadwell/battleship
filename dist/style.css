@@ -169,9 +169,6 @@ footer {
   align-items: center;
 }
 
-.battlefield-table {
-}
-
 .battlefield-cell {
   border: 1px solid #b4b4ff;
   padding: 0;
@@ -182,7 +179,8 @@ footer {
 }
 
 .battlefield-cell-content {
-  height: 2rem;
+  min-height: 2rem;
+  max-height: 2rem;
   width: 2rem;
 }
 
