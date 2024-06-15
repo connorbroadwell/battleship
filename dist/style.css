@@ -1,3 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Tiny5&display=swap");
+
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
    License: none (public domain)
@@ -131,6 +134,12 @@ table {
 /* css reset end */
 /* begin styling */
 
+:root {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
 body {
   overflow: hidden;
 }
@@ -157,6 +166,9 @@ main {
 footer {
   grid-area: footer;
   margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  color: grey;
 }
 
 .battlefields {
@@ -195,6 +207,8 @@ footer {
 
 .battlefield-label {
   padding: 1rem;
+  font-size: 2rem;
+  font-family: "Tiny5", "Poppins", sans-serif;
 }
 
 .battlefield-self {
