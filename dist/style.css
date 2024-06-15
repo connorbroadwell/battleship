@@ -138,10 +138,12 @@ body {
 .body-wrap {
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: auto 2fr auto;
   grid-template-areas:
     "header"
     "main"
     "footer";
+  height: 100vh;
 }
 
 header {
@@ -159,14 +161,23 @@ footer {
 .battlefields {
   display: flex;
   flex-direction: column;
-  row-gap: 3rem;
-  padding-top: 2rem;
+  height: 100%;
 }
 
 .battlefield {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.battlefield-table {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(16px, 1fr));
+  grid-template-rows: repeat(10, minmax(16px, 1fr));
+  height: 70%;
+  width: 70%;
 }
 
 .battlefield-cell {
@@ -175,13 +186,10 @@ footer {
 }
 
 .battlefield-label {
-  padding-top: 1rem;
 }
 
 .battlefield-cell-content {
-  min-height: 2rem;
-  max-height: 2rem;
-  width: 2rem;
+  border: 1px solid #b4b4ff;
 }
 
 .title {
