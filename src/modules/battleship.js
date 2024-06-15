@@ -86,14 +86,17 @@ const Gameboard = () => {
 
     return {
       getCoordinateData,
-      getIndexByCoordinate,
-      getCoordinateByIndex,
       map,
     };
   }
 
   function getSize() {
     return size;
+  }
+
+  function getAliveShips() {
+    this.map = getMap();
+    return this.map.map.filter((value) => value.ship);
   }
 
   function placeShip(coords, ship) {
@@ -105,7 +108,7 @@ const Gameboard = () => {
     mapLocation.ship = ship;
   }
 
-  return { getSize, placeShip };
+  return { getSize, placeShip, getAliveShips };
 };
 
 const Player = () => {
