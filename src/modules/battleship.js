@@ -99,7 +99,7 @@ const Gameboard = () => {
     return this.map.map.filter((value) => value.ship);
   }
 
-  function placeShip(coords, ship) {
+  function placeShipPart(coords, ship) {
     this.map = getMap();
     const mapLocation = this.map.getCoordinateData(coords);
     if (mapLocation.ship) throw new Error("Occupied space!");
@@ -108,7 +108,42 @@ const Gameboard = () => {
     mapLocation.ship = ship;
   }
 
-  return { getSize, placeShip, getAliveShips };
+  function placeShip(coords, shipSize) {
+    const ship = Ship(shipSize);
+    let useY = false;
+    if (coords[0] + shipSize > size - 1) {
+      useY = true;
+    }
+    for (let i = 0; i < shipSize.length; i += 1) {
+      if (useY) {
+        placeShipPart(coords[1] + i, ship);
+      } else {
+        placeShipPart(coords[1] + i, ship);
+      }
+    }
+    return useY;
+  }
+
+  function receiveAttack(coords) {
+    this.map = getMap();
+    const target = this.map.getCoordinateData(coords);
+    if (target.miss) return;
+    if (target.ship) {
+      if (target.ship.isSunk()) return;
+      target.ship.hit();
+    } else {
+      target.miss = true;
+    }
+  }
+
+  return {
+    getSize,
+    placeShip,
+    placeShipPart,
+    getAliveShips,
+    receiveAttack,
+    getMap,
+  };
 };
 
 const Player = () => {
@@ -138,9 +173,7 @@ const Game = () => {
     return { playableShips, total };
   }
 
-  self.gameBrd.placeShip([0, 2], Ship(4));
-
   return { getPlayableShips, self, rival };
 };
 
-export { Game };
+export { Game, Ship };
