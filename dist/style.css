@@ -239,3 +239,10 @@ footer {
   display: flex;
   justify-content: center;
 }
+
+@media only screen and (min-width: 540px) {
+  .battlefields {
+    margin-left: 20%;
+    margin-right: 20%;
+  }
+}
