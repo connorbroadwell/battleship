@@ -52,7 +52,7 @@ const Table = (tableSize, parentQuery) => {
 
   const tableEl = getNewTableElement();
 
-  const label = document.querySelector(`${parentQuery} .battlefield-label`);
+  const label = document.querySelector(`${parentQuery}-label`);
   if (parentQuery === ".battlefield-self") {
     label.textContent = "You";
   } else {
