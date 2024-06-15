@@ -156,12 +156,16 @@ main {
 
 footer {
   grid-area: footer;
+  margin-top: 1rem;
 }
 
 .battlefields {
   display: flex;
   flex-direction: column;
   height: 100%;
+  margin-left: 3rem;
+  margin-right: 3rem;
+  gap: 3rem;
 }
 
 .battlefield {
@@ -176,8 +180,8 @@ footer {
   display: grid;
   grid-template-columns: repeat(10, minmax(16px, 1fr));
   grid-template-rows: repeat(10, minmax(16px, 1fr));
-  height: 70%;
-  width: 70%;
+  height: 100%;
+  width: 100%;
 }
 
 .battlefield-cell {
@@ -185,11 +189,16 @@ footer {
   padding: 0;
 }
 
-.battlefield-label {
-}
-
 .battlefield-cell-content {
   border: 1px solid #b4b4ff;
+}
+
+.battlefield-label {
+  padding: 1rem;
+}
+
+.battlefield-self {
+  padding-top: 2rem;
 }
 
 .title {
