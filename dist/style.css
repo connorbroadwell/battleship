@@ -235,3 +235,19 @@ footer {
   display: flex;
   justify-content: center;
 }
+
+@media only screen and (min-width: 730px) {
+  .battlefields {
+    grid-template-columns: auto auto;
+    grid-template-areas: "battlefield-self-label battlefield-self battlefield-rival battlefield-rival-label";
+    align-items: center;
+  }
+
+  .battlefield-rival {
+    padding-top: 0;
+  }
+
+  .battlefield-self {
+    padding-right: 3rem;
+  }
+}
