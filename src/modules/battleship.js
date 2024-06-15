@@ -49,32 +49,63 @@ const Gameboard = () => {
     return arr;
   }
 
-  function getMap() {
-    const map = init();
-    const dictionary = {
-      columns: {},
-      rows: {},
-    };
-    for (let i = 0; i < size; i += 1) {
-      const arrColumns = map.filter((value) => value.col === getColMarker(i));
-      dictionary.columns[getColMarker(i)] = arrColumns;
+  let map = init();
 
-      const arrRows = map.filter((value) => value.row === i + 1);
-      dictionary.rows[i + 1] = arrRows;
+  function getMap() {
+    function getDictionary() {
+      const dictionary = {
+        columns: {},
+        rows: {},
+      };
+      for (let i = 0; i < size; i += 1) {
+        const arrColumns = map.filter((value) => value.col === getColMarker(i));
+        dictionary.columns[getColMarker(i)] = arrColumns;
+
+        const arrRows = map.filter((value) => value.row === i + 1);
+        dictionary.rows[i + 1] = arrRows;
+      }
+
+      return dictionary;
     }
 
-    return dictionary;
-  }
+    function getIndexByCoordinate(coords) {
+      const result = map.findIndex(
+        (value) => value.x === coords[0] && value.y === coords[1]
+      );
+      return result;
+    }
 
-  const map = getMap();
+    function getCoordinateByIndex(index) {
+      return map[index];
+    }
+
+    function getCoordinateData(coords) {
+      const index = getIndexByCoordinate(coords);
+      return getCoordinateByIndex(index);
+    }
+
+    return {
+      getCoordinateData,
+      getIndexByCoordinate,
+      getCoordinateByIndex,
+      map,
+    };
+  }
 
   function getSize() {
     return size;
   }
 
-  function placeShip(coords) {}
+  function placeShip(coords, ship) {
+    this.map = getMap();
+    const mapLocation = this.map.getCoordinateData(coords);
+    if (mapLocation.ship) throw new Error("Occupied space!");
 
-  return { getSize };
+    ship.setCoordinates(mapLocation);
+    mapLocation.ship = ship;
+  }
+
+  return { getSize, placeShip };
 };
 
 const Player = () => {
@@ -103,6 +134,8 @@ const Game = () => {
 
     return { playableShips, total };
   }
+
+  self.gameBrd.placeShip([0, 2], Ship(4));
 
   return { getPlayableShips, self, rival };
 };
