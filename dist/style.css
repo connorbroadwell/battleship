@@ -152,6 +152,7 @@ body {
     "main"
     "footer";
   height: 100vh;
+  grid-template-rows: min-content 1fr min-content;
 }
 
 header {
@@ -160,6 +161,9 @@ header {
 
 main {
   grid-area: main;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 footer {
@@ -249,5 +253,11 @@ footer {
 
   .battlefield-self {
     padding-right: 3rem;
+  }
+}
+
+@media only screen and (min-width: 990px) {
+  .battlefield-self {
+    margin-right: calc(max(5rem, 50%));
   }
 }
