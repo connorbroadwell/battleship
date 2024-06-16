@@ -49,9 +49,9 @@ const Gameboard = () => {
     return arr;
   }
 
-  let map = init();
+  const map = init();
 
-  function getMap() {
+  function getMapData() {
     function getDictionary() {
       const dictionary = {
         columns: {},
@@ -95,38 +95,37 @@ const Gameboard = () => {
   }
 
   function getAliveShips() {
-    this.map = getMap();
-    return this.map.map.filter((value) => value.ship);
+    const mapData = getMapData();
+    return mapData.map.filter((value) => value.ship);
   }
 
   function placeShipPart(coords, ship) {
-    this.map = getMap();
-    const mapLocation = this.map.getCoordinateData(coords);
+    const mapData = getMapData();
+    const mapLocation = mapData.getCoordinateData(coords);
     if (mapLocation.ship) throw new Error("Occupied space!");
 
     ship.setCoordinates(mapLocation);
     mapLocation.ship = ship;
   }
 
-  function placeShip(coords, shipSize) {
+  function placeShip(coords, shipSize, direction) {
+    if (direction !== "horizontal" && direction !== "vertical")
+      throw new Error("Ship must have a direction");
     const ship = Ship(shipSize);
-    let useY = false;
-    if (coords[0] + shipSize > size - 1) {
-      useY = true;
-    }
-    for (let i = 0; i < shipSize.length; i += 1) {
-      if (useY) {
-        placeShipPart(coords[1] + i, ship);
+    for (let i = 0; i < shipSize; i += 1) {
+      if (direction === "horizontal" && coords[0] + shipSize < size) {
+        placeShipPart([coords[0] + i, coords[1]], ship);
+      } else if (direction === "vertical" && coords[1] + shipSize < size) {
+        placeShipPart([coords[0], coords[1] + i], ship);
       } else {
-        placeShipPart(coords[1] + i, ship);
+        throw new Error("Invalid placement: Ship will not fit");
       }
     }
-    return useY;
   }
 
   function receiveAttack(coords) {
-    this.map = getMap();
-    const target = this.map.getCoordinateData(coords);
+    const mapData = getMapData();
+    const target = mapData.getCoordinateData(coords);
     if (target.miss) return;
     if (target.ship) {
       if (target.ship.isSunk()) return;
@@ -142,7 +141,7 @@ const Gameboard = () => {
     placeShipPart,
     getAliveShips,
     receiveAttack,
-    getMap,
+    getMapData,
   };
 };
 

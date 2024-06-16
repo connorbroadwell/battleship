@@ -22,8 +22,8 @@ test("valid board size", () => {
 test("place ship part", () => {
   const game = Game();
   game.self.gameBrd.placeShipPart([0, 5], Ship(1));
-  const map = game.self.gameBrd.getMap();
-  expect(map.getCoordinateData([0, 5]).ship).toBeTruthy();
+  const mapData = game.self.gameBrd.getMapData();
+  expect(mapData.getCoordinateData([0, 5]).ship).toBeTruthy();
 });
 
 test("sink ship part", () => {
@@ -32,14 +32,40 @@ test("sink ship part", () => {
   game.self.gameBrd.receiveAttack([2, 7]);
   game.self.gameBrd.receiveAttack([2, 7]);
   game.self.gameBrd.receiveAttack([2, 7]);
-  const map = game.self.gameBrd.getMap();
-  expect(map.getCoordinateData([2, 7]).ship.isSunk());
+  const mapData = game.self.gameBrd.getMapData();
+  expect(mapData.getCoordinateData([2, 7]).ship.isSunk());
 });
 
 test("build multipart ship", () => {
   const game = Game();
-  const ship = Ship(4);
-  game.self.gameBrd.placeShip([0, 5], 4);
-  const map = game.self.gameBrd.getMap();
-  expect(map.getCoordinateData([0, 5]).ship.isSunk());
+  game.self.gameBrd.placeShip([0, 5], 4, "vertical");
+  const mapData = game.self.gameBrd.getMapData();
+  expect(
+    mapData.getCoordinateData([0, 5]).ship &&
+      mapData.getCoordinateData([0, 6]).ship &&
+      mapData.getCoordinateData([0, 7]).ship &&
+      mapData.getCoordinateData([0, 8]).ship
+  ).toBeTruthy();
+});
+
+test("ship shares health across coordinates", () => {
+  const game = Game();
+  game.self.gameBrd.placeShip([0, 5], 4, "vertical");
+  const mapData = game.self.gameBrd.getMapData();
+  game.self.gameBrd.receiveAttack([0, 5]);
+  game.self.gameBrd.receiveAttack([0, 6]);
+  game.self.gameBrd.receiveAttack([0, 7]);
+  game.self.gameBrd.receiveAttack([0, 8]);
+  expect(mapData.getCoordinateData([0, 8]).ship.isSunk()).toBeTruthy();
+});
+
+test("ship disallows hitting the same spot", () => {
+  const game = Game();
+  game.self.gameBrd.placeShip([0, 5], 4, "vertical");
+  const mapData = game.self.gameBrd.getMapData();
+  game.self.gameBrd.receiveAttack([0, 5]);
+  game.self.gameBrd.receiveAttack([0, 5]);
+  game.self.gameBrd.receiveAttack([0, 5]);
+  game.self.gameBrd.receiveAttack([0, 5]);
+  expect(mapData.getCoordinateData([0, 8]).ship.isSunk()).toBeFalsy();
 });
