@@ -52,17 +52,19 @@ const Gameboard = () => {
   const map = init();
 
   function getMapData() {
-    function getDictionary() {
+    function getDictionary(mapArr = map) {
       const dictionary = {
-        columns: {},
-        rows: {},
+        columns: [],
+        rows: [],
       };
       for (let i = 0; i < size; i += 1) {
-        const arrColumns = map.filter((value) => value.col === getColMarker(i));
-        dictionary.columns[getColMarker(i)] = arrColumns;
+        const arrColumns = mapArr.filter(
+          (value) => value.col === getColMarker(i)
+        );
+        dictionary.columns.push(arrColumns);
 
-        const arrRows = map.filter((value) => value.row === i + 1);
-        dictionary.rows[i + 1] = arrRows;
+        const arrRows = mapArr.filter((value) => value.row === i + 1);
+        dictionary.rows.push(arrRows);
       }
 
       return dictionary;
@@ -87,6 +89,7 @@ const Gameboard = () => {
     return {
       getCoordinateData,
       map,
+      getDictionary,
     };
   }
 
@@ -104,6 +107,40 @@ const Gameboard = () => {
     });
     if (ships.length === 0) return true;
     return false;
+  }
+
+  function difference(num1, num2) {
+    return Math.abs(num1 - num2);
+  }
+
+  function getValidHorizontalPlacement(shipSize) {
+    const mapData = getMapData();
+    const freeSpace = mapData.map.filter((value) => !value.ship);
+    const dictionary = mapData.getDictionary(freeSpace);
+    const validStartingPositions = [];
+    const arr = [];
+    // console.log(dictionary.columns);
+    for (let i = 0; i < dictionary.columns.length; i += 1) {
+      let counter = 0;
+      const column = dictionary.columns[i];
+      for (let j = 0; j < column.length; j += 1) {
+        const curCoordData = column[j];
+        const nextCoordData = column[j + 1];
+
+        if (curCoordData && nextCoordData) {
+          if (counter === shipSize) {
+            validStartingPositions.push(arr);
+          }
+          if (difference(curCoordData.x, nextCoordData.x) === 1) {
+            counter += 1;
+            arr.push(curCoordData);
+          } else {
+            counter = 0;
+          }
+        }
+      }
+    }
+    return validStartingPositions;
   }
 
   function placeShipPart(coords, ship) {
@@ -170,6 +207,7 @@ const Gameboard = () => {
     allShipsSunk,
     receiveAttack,
     getMapData,
+    getValidHorizontalPlacement,
   };
 };
 
@@ -184,12 +222,18 @@ const Game = () => {
   const self = Player();
   const rival = Player();
 
-  const playableShips = {
-    oneShip: 4,
-    twoShip: 3,
-    threeShip: 2,
-    fourShip: 1,
-  };
+  const playableShips = [
+    { size: 1, howMany: 4 },
+    { size: 2, howMany: 3 },
+    { size: 3, howMany: 2 },
+    { size: 4, howMany: 1 },
+  ];
+
+  function genRandPlaceOrder(player) {
+    for (let i = 0; i < playableShips.length; i += 1) {
+      //player.gameBrd.placeShip()
+    }
+  }
 
   function getPlayableShips() {
     const total = Object.values(playableShips).reduce(
