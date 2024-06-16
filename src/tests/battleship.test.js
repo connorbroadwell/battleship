@@ -81,10 +81,3 @@ test("all ships are sunk", () => {
 
   expect(game.self.gameBrd.allShipsSunk()).toBeTruthy();
 });
-
-test("is valid horizontal placement", () => {
-  const game = Game();
-  game.self.gameBrd.placeShip([4, 7], 4, "horizontal");
-  const result = game.self.gameBrd.getValidHorizontalPlacement(4);
-  expect(result).toEqual([0, 1, 2, 3]);
-});

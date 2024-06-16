@@ -113,28 +113,23 @@ const Gameboard = () => {
     return Math.abs(num1 - num2);
   }
 
-  function getValidHorizontalPlacement(shipSize) {
+  function getValidXCoords(shipSize) {
     const mapData = getMapData();
     const freeSpace = mapData.map.filter((value) => !value.ship);
     const dictionary = mapData.getDictionary(freeSpace);
     const validStartingPositions = [];
-    const arr = [];
-    // console.log(dictionary.columns);
+
     for (let i = 0; i < dictionary.columns.length; i += 1) {
       const column = dictionary.columns[i];
-      let counter = 0;
+
       for (let j = 0; j < column.length; j += 1) {
-        while (counter < shipSize) {
-          counter += 1;
-          if (column[j] && column[j + counter]) {
-            console.log("fsddfsdfds");
-            console.log(difference(column[j].x, column[j + counter].x));
-            // if (difference(column[j].x, column[j + counter].x) !== 1) {
-            //   counter = 0;
-            //   break;
-            // } else {
-            //   console.log(counter);
-            // }
+        for (let k = 0; k < shipSize; k += 1) {
+          if (j + k < column.length) {
+            const diff = difference(column[j].x, column[j + k].x);
+            console.log({ test: column[j], test2: column[j + k], diff });
+            if (diff === shipSize - 1) {
+              validStartingPositions.push(column[j]);
+            }
           }
         }
       }
@@ -206,7 +201,7 @@ const Gameboard = () => {
     allShipsSunk,
     receiveAttack,
     getMapData,
-    getValidHorizontalPlacement,
+    getValidXCoords,
   };
 };
 
