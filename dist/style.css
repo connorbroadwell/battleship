@@ -240,6 +240,10 @@ footer {
   justify-content: center;
 }
 
+.battlefield-self .ship {
+  background-color: #a7f3d0;
+}
+
 @media only screen and (min-width: 730px) {
   .battlefields {
     grid-template-columns: auto auto;

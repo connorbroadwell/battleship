@@ -60,7 +60,13 @@ const Table = (tableSize, parentQuery) => {
   }
 
   function update(ships) {
-    console.log(ships);
+    const arr = ships;
+    for (let i = 0; i < arr.length; i += 1) {
+      const shipCell = document.querySelector(
+        `${parentQuery} .battlefield-cell-content[data-x="${arr[i].x}"][data-y="${arr[i].y}"]`
+      );
+      shipCell.classList.add("ship");
+    }
   }
 
   function render() {
