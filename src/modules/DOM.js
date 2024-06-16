@@ -59,7 +59,9 @@ const Table = (tableSize, parentQuery) => {
     label.textContent = "Rival";
   }
 
-  function update() {}
+  function update(ships) {
+    console.log(ships);
+  }
 
   function render() {
     // eslint-disable-next-line no-param-reassign
@@ -68,6 +70,7 @@ const Table = (tableSize, parentQuery) => {
 
   return {
     render,
+    update,
   };
 };
 
@@ -76,3 +79,5 @@ const tableRival = Table(10, ".battlefield-rival");
 
 tableSelf.render();
 tableRival.render();
+
+export { tableSelf, tableRival };

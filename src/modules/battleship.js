@@ -1,3 +1,5 @@
+import { tableSelf, tableRival } from "./DOM";
+
 const Ship = (size) => {
   const shipSize = size;
   let timesHit = 0;
@@ -109,6 +111,11 @@ const Gameboard = () => {
     return false;
   }
 
+  function getShips() {
+    const mapData = getMapData();
+    return mapData.map.filter((value) => value.ship);
+  }
+
   function difference(num1, num2) {
     return Math.abs(num1 - num2);
   }
@@ -149,7 +156,7 @@ const Gameboard = () => {
               getColumnData(column[j]),
               getColumnData(column[j + k])
             );
-            console.log({ test: column[j], test2: column[j + k], diff });
+            // console.log({ test: column[j], test2: column[j + k], diff });
             if (diff === shipSize - 1) {
               validStartingPositions.push(column[j]);
             }
@@ -169,7 +176,12 @@ const Gameboard = () => {
   }
 
   function placeShip(coords, shipSize, direction) {
-    if (direction !== "horizontal" && direction !== "vertical")
+    if (
+      direction !== "horizontal" &&
+      direction !== "vertical" &&
+      direction !== "x" &&
+      direction !== "y"
+    )
       throw new Error("Ship must have a direction");
 
     const ship = Ship(shipSize);
@@ -186,10 +198,14 @@ const Gameboard = () => {
     }
 
     for (let i = 0; i < shipSize; i += 1) {
-      if (direction === "horizontal" && coords[0] + shipSize < size) {
-        cordData = [coords[0] + i, coords[1]];
-      } else if (direction === "vertical" && coords[1] + shipSize < size) {
-        cordData = [coords[0], coords[1] + i];
+      if (direction === "horizontal" || direction === "x") {
+        if (coords[0] + shipSize <= size) {
+          cordData = [coords[0] + i, coords[1]];
+        }
+      } else if (direction === "vertical" || direction === "y") {
+        if (coords[1] + shipSize <= size) {
+          cordData = [coords[0], coords[1] + i];
+        }
       } else {
         throw new Error("Invalid placement: Ship will not fit");
       }
@@ -225,20 +241,12 @@ const Gameboard = () => {
     receiveAttack,
     getMapData,
     getValidCoords,
+    getShips,
   };
 };
 
 const Player = () => {
   const gameBrd = Gameboard();
-
-  return { gameBrd };
-};
-
-// by default the game will have 10 ships on a grid with a size of 10
-const Game = () => {
-  const self = Player();
-  const rival = Player();
-
   const playableShips = [
     { size: 1, howMany: 4 },
     { size: 2, howMany: 3 },
@@ -246,16 +254,55 @@ const Game = () => {
     { size: 4, howMany: 1 },
   ];
 
-  function genRandPlaceOrder(player) {
-    for (let i = 0; i < playableShips.length; i += 1) {
-      //player.gameBrd.placeShip()
+  return { gameBrd, playableShips };
+};
+
+// by default the game will have 10 ships on a grid with a size of 10
+const Game = () => {
+  const self = Player();
+  const rival = Player();
+
+  function random(player) {
+    const playableShipIndex = Math.floor(
+      Math.random() * player.playableShips.length
+    );
+    const randAxis = Math.floor(Math.random() * 2);
+    const shipSize = player.playableShips[playableShipIndex].size;
+    let axis;
+    if (randAxis === 0) {
+      axis = "x";
     }
+    if (randAxis === 1) {
+      axis = "y";
+    }
+
+    player.playableShips[playableShipIndex].howMany -= 1;
+
+    const validStartingPositions = player.gameBrd.getValidCoords(
+      axis,
+      shipSize
+    );
+    const coordIndex = Math.floor(
+      Math.random() * validStartingPositions.length
+    );
+    const target = validStartingPositions[coordIndex];
+    const log = {
+      playableShips: player.playableShips,
+      target,
+      axis,
+      shipSize,
+    };
+    console.log(log);
+    player.gameBrd.placeShip([target.x, target.y], shipSize, axis);
   }
 
+  random(self);
+  tableSelf.update(self.gameBrd.getShips());
+
   function getPlayableShips() {
-    const total = Object.values(playableShips).reduce(
+    const total = playableShips.reduce(
       // eslint-disable-next-line no-return-assign, no-param-reassign
-      (prev, cur) => (cur += prev)
+      (prev, cur) => (cur.howMany += prev.howMany)
     );
 
     return { playableShips, total };
@@ -263,5 +310,7 @@ const Game = () => {
 
   return { getPlayableShips, self, rival };
 };
+
+const game = Game();
 
 export { Game, Ship };

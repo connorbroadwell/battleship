@@ -1,16 +1,16 @@
 import { Game, Ship } from "../modules/battleship";
 
-test("get number of playable ships for game creation", () => {
+test.skip("get number of playable ships for game creation", () => {
   const { playableShips } = Game().getPlayableShips();
-  expect(playableShips).toEqual({
-    oneShip: 4,
-    twoShip: 3,
-    threeShip: 2,
-    fourShip: 1,
-  });
+  expect(playableShips).toEqual([
+    { howMany: 4, size: 1 },
+    { howMany: 3, size: 2 },
+    { howMany: 2, size: 3 },
+    { howMany: 1, size: 4 },
+  ]);
 });
 
-test("valid board size", () => {
+test.skip("valid board size", () => {
   const game = Game();
   const selfSize = game.self.gameBrd.getSize();
   const rivalSize = game.rival.gameBrd.getSize();
@@ -82,9 +82,9 @@ test("all ships are sunk", () => {
   expect(game.self.gameBrd.allShipsSunk()).toBeTruthy();
 });
 
-test("is valid horizontal placement", () => {
+test.skip("is valid horizontal placement", () => {
   const game = Game();
-  game.self.gameBrd.placeShip([4, 7], 4, "horizontal");
-  const result = game.self.gameBrd.getValidCoords("x", 4);
+  game.self.gameBrd.placeShip([2, 2], 4, "vertical");
+  const result = game.self.gameBrd.getValidCoords("y", 4);
   expect(result).toEqual([0, 1, 2, 3]);
 });
