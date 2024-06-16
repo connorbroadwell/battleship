@@ -121,21 +121,20 @@ const Gameboard = () => {
     const arr = [];
     // console.log(dictionary.columns);
     for (let i = 0; i < dictionary.columns.length; i += 1) {
-      let counter = 0;
       const column = dictionary.columns[i];
+      let counter = 0;
       for (let j = 0; j < column.length; j += 1) {
-        const curCoordData = column[j];
-        const nextCoordData = column[j + 1];
-
-        if (curCoordData && nextCoordData) {
-          if (counter === shipSize) {
-            validStartingPositions.push(arr);
-          }
-          if (difference(curCoordData.x, nextCoordData.x) === 1) {
-            counter += 1;
-            arr.push(curCoordData);
-          } else {
-            counter = 0;
+        while (counter < shipSize) {
+          counter += 1;
+          if (column[j] && column[j + counter]) {
+            console.log("fsddfsdfds");
+            console.log(difference(column[j].x, column[j + counter].x));
+            // if (difference(column[j].x, column[j + counter].x) !== 1) {
+            //   counter = 0;
+            //   break;
+            // } else {
+            //   console.log(counter);
+            // }
           }
         }
       }
