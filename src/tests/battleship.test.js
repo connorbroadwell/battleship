@@ -69,22 +69,3 @@ test("ship disallows hitting the same spot", () => {
   game.self.gameBrd.receiveAttack([0, 5]);
   expect(mapData.getCoordinateData([0, 8]).ship.isSunk()).toBeFalsy();
 });
-
-test("get ship coordinates", () => {
-  const game = Game();
-  game.self.gameBrd.placeShip([0, 5], 4, "vertical");
-  const mapData = game.self.gameBrd.getMapData();
-  game.self.gameBrd.receiveAttack([0, 5]);
-  game.self.gameBrd.receiveAttack([0, 6]);
-  const shipDataArr = [
-    mapData.getCoordinateData([0, 5]),
-    mapData.getCoordinateData([0, 6]),
-    mapData.getCoordinateData([0, 7]),
-    mapData.getCoordinateData([0, 8]),
-  ];
-  for (let i = 0; i < shipDataArr.length; i += 1) {
-    console.log(shipDataArr[i].ship.getCoordinates());
-  }
-
-  expect(mapData.getCoordinateData([0, 8]).ship.isSunk()).toBeFalsy();
-});

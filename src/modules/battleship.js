@@ -110,40 +110,47 @@ const Gameboard = () => {
   function placeShip(coords, shipSize, direction) {
     if (direction !== "horizontal" && direction !== "vertical")
       throw new Error("Ship must have a direction");
+
     const ship = Ship(shipSize);
     const arrayCords = [];
     const mapData = getMapData();
+    let cordData;
+
+    function pushCoordDataIntoShip(data) {
+      const mapCoordsClone = JSON.parse(
+        JSON.stringify(mapData.getCoordinateData(data))
+      );
+      delete mapCoordsClone.ship;
+      arrayCords.push(mapCoordsClone);
+    }
+
     for (let i = 0; i < shipSize; i += 1) {
       if (direction === "horizontal" && coords[0] + shipSize < size) {
-        const hCords = [coords[0] + i, coords[1]];
-        placeShipPart(hCords, ship);
-        const mapCoordsClone = JSON.parse(
-          JSON.stringify(mapData.getCoordinateData(hCords))
-        );
-        delete mapCoordsClone.ship;
-        arrayCords.push(mapCoordsClone);
+        cordData = [coords[0] + i, coords[1]];
       } else if (direction === "vertical" && coords[1] + shipSize < size) {
-        const vCords = [coords[0], coords[1] + i];
-        placeShipPart(vCords, ship);
-        const mapCoordsClone = JSON.parse(
-          JSON.stringify(mapData.getCoordinateData(vCords))
-        );
-        delete mapCoordsClone.ship;
-        arrayCords.push(mapCoordsClone);
+        cordData = [coords[0], coords[1] + i];
       } else {
         throw new Error("Invalid placement: Ship will not fit");
       }
+
+      if (typeof cordData === "undefined" || cordData === null)
+        throw new Error("Coordinates must not be null or undefined");
+
+      placeShipPart(cordData, ship);
+      pushCoordDataIntoShip(cordData);
     }
+
     ship.setCoordinates(arrayCords);
   }
 
   function receiveAttack(coords) {
     const mapData = getMapData();
     const target = mapData.getCoordinateData(coords);
-    if (target.miss) return;
+    if (target.miss || target.hit) return;
     if (target.ship) {
       if (target.ship.isSunk()) return;
       target.ship.hit();
+      target.hit = true;
     } else {
       target.miss = true;
     }
