@@ -2,7 +2,7 @@ const Ship = (size) => {
   const shipSize = size;
   let timesHit = 0;
   let sunk = false;
-  let coordinates;
+  let coordinates = [];
 
   function getSize() {
     return shipSize;
@@ -104,7 +104,6 @@ const Gameboard = () => {
     const mapLocation = mapData.getCoordinateData(coords);
     if (mapLocation.ship) throw new Error("Occupied space!");
 
-    ship.setCoordinates(mapLocation);
     mapLocation.ship = ship;
   }
 
@@ -112,15 +111,30 @@ const Gameboard = () => {
     if (direction !== "horizontal" && direction !== "vertical")
       throw new Error("Ship must have a direction");
     const ship = Ship(shipSize);
+    const arrayCords = [];
+    const mapData = getMapData();
     for (let i = 0; i < shipSize; i += 1) {
       if (direction === "horizontal" && coords[0] + shipSize < size) {
-        placeShipPart([coords[0] + i, coords[1]], ship);
+        const hCords = [coords[0] + i, coords[1]];
+        placeShipPart(hCords, ship);
+        const mapCoordsClone = JSON.parse(
+          JSON.stringify(mapData.getCoordinateData(hCords))
+        );
+        delete mapCoordsClone.ship;
+        arrayCords.push(mapCoordsClone);
       } else if (direction === "vertical" && coords[1] + shipSize < size) {
-        placeShipPart([coords[0], coords[1] + i], ship);
+        const vCords = [coords[0], coords[1] + i];
+        placeShipPart(vCords, ship);
+        const mapCoordsClone = JSON.parse(
+          JSON.stringify(mapData.getCoordinateData(vCords))
+        );
+        delete mapCoordsClone.ship;
+        arrayCords.push(mapCoordsClone);
       } else {
         throw new Error("Invalid placement: Ship will not fit");
       }
     }
+    ship.setCoordinates(arrayCords);
   }
 
   function receiveAttack(coords) {
