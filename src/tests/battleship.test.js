@@ -69,3 +69,15 @@ test("ship disallows hitting the same spot", () => {
   game.self.gameBrd.receiveAttack([0, 5]);
   expect(mapData.getCoordinateData([0, 8]).ship.isSunk()).toBeFalsy();
 });
+
+test("all ships are sunk", () => {
+  const game = Game();
+  game.self.gameBrd.placeShip([4, 7], 2, "horizontal");
+  game.self.gameBrd.receiveAttack([4, 7]);
+  game.self.gameBrd.receiveAttack([5, 7]);
+
+  game.self.gameBrd.placeShip([9, 7], 1, "vertical");
+  game.self.gameBrd.receiveAttack([9, 7]);
+
+  expect(game.self.gameBrd.allShipsSunk()).toBeTruthy();
+});

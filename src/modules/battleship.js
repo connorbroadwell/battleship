@@ -94,9 +94,16 @@ const Gameboard = () => {
     return size;
   }
 
-  function getAliveShips() {
+  function allShipsSunk() {
     const mapData = getMapData();
-    return mapData.map.filter((value) => value.ship);
+    const ships = mapData.map.filter((value) => {
+      if (value.ship) {
+        return !value.ship.isSunk();
+      }
+      return false;
+    });
+    if (ships.length === 0) return true;
+    return false;
   }
 
   function placeShipPart(coords, ship) {
@@ -160,7 +167,7 @@ const Gameboard = () => {
     getSize,
     placeShip,
     placeShipPart,
-    getAliveShips,
+    allShipsSunk,
     receiveAttack,
     getMapData,
   };
