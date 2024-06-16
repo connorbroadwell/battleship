@@ -113,19 +113,42 @@ const Gameboard = () => {
     return Math.abs(num1 - num2);
   }
 
-  function getValidXCoords(shipSize) {
+  function getValidCoords(axis, shipSize) {
     const mapData = getMapData();
     const freeSpace = mapData.map.filter((value) => !value.ship);
-    const dictionary = mapData.getDictionary(freeSpace);
     const validStartingPositions = [];
+    let dictionary;
 
-    for (let i = 0; i < dictionary.columns.length; i += 1) {
-      const column = dictionary.columns[i];
+    function getColumns() {
+      return mapData.getDictionary(freeSpace).columns;
+    }
+
+    function getRows() {
+      return mapData.getDictionary(freeSpace).rows;
+    }
+
+    function getColumnData(columnData) {
+      if (axis === "x") return columnData.x;
+      if (axis === "y") return columnData.y;
+      return null;
+    }
+
+    if (axis === "x") {
+      dictionary = getColumns();
+    } else if (axis === "y") {
+      dictionary = getRows();
+    }
+
+    for (let i = 0; i < dictionary.length; i += 1) {
+      const column = dictionary[i];
 
       for (let j = 0; j < column.length; j += 1) {
         for (let k = 0; k < shipSize; k += 1) {
           if (j + k < column.length) {
-            const diff = difference(column[j].x, column[j + k].x);
+            const diff = difference(
+              getColumnData(column[j]),
+              getColumnData(column[j + k])
+            );
             console.log({ test: column[j], test2: column[j + k], diff });
             if (diff === shipSize - 1) {
               validStartingPositions.push(column[j]);
@@ -201,7 +224,7 @@ const Gameboard = () => {
     allShipsSunk,
     receiveAttack,
     getMapData,
-    getValidXCoords,
+    getValidCoords,
   };
 };
 
