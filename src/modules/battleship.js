@@ -122,11 +122,27 @@ const Gameboard = () => {
 
   function getValidCoords(shipSize) {
     const mapData = getMapData();
-    const freeSpaceArr = mapData.map.filter((value) => {
-      if (value.ship) {
-        console.log(value);
+    const invalidCoords = [];
+    for (let i = 0; i < mapData.map.length; i += 1) {
+      if (mapData.map[i].ship) {
+        const coords = mapData.map[i].ship.getCoordinates();
+        for (let j = 0; j < coords.length; j += 1) {
+          invalidCoords.push([coords[j].x, coords[j].y + 1]);
+          invalidCoords.push([coords[j].x, coords[j].y - 1]);
+        }
+        const start = coords[0];
+        const end = coords[coords.length - 1];
+        invalidCoords.push([start.x - 1, start.y]);
+        invalidCoords.push([start.x - 1, start.y + 1]);
+        invalidCoords.push([start.x - 1, start.y - 1]);
+
+        invalidCoords.push([end.x + 1, end.y]);
+        invalidCoords.push([end.x + 1, end.y + 1]);
+        invalidCoords.push([end.x + 1, end.y - 1]);
       }
-    });
+    }
+    console.log(invalidCoords);
+    const freeSpaceArr = mapData.map.filter((value) => {});
     const validStartingPositions = [];
 
     function getHorizontalDiff(i, k) {
@@ -151,7 +167,8 @@ const Gameboard = () => {
     }
 
     //iterate();
-    return validStartingPositions;
+    // return validStartingPositions;
+    return invalidCoords;
   }
 
   function placeShipPart(coords, ship) {
@@ -292,5 +309,6 @@ console.log(
   game.self.gameBrd.getMapData().getCoordinateData([2, 2]).ship.getCoordinates()
 );
 tableSelf.update(game.self.gameBrd.getShips());
+tableSelf.renderInvalidSpace(game.self.gameBrd.getValidCoords(4));
 
 export { Game, Ship };

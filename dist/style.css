@@ -246,6 +246,10 @@ footer {
   border: solid 1px;
 }
 
+.battlefield-self .invalid {
+  background-color: red;
+}
+
 @media only screen and (min-width: 730px) {
   .battlefields {
     grid-template-columns: auto auto;

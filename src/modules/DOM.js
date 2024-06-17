@@ -70,6 +70,16 @@ const Table = (tableSize, parentQuery) => {
     }
   }
 
+  function renderInvalidSpace(invalidSpaceArr) {
+    const arr = invalidSpaceArr;
+    for (let i = 0; i < arr.length; i += 1) {
+      const cell = document.querySelector(
+        `${parentQuery} .battlefield-cell-content[data-x="${arr[i][0]}"][data-y="${arr[i][1]}"]`
+      );
+      cell.classList.add("invalid");
+    }
+  }
+
   function render() {
     // eslint-disable-next-line no-param-reassign
     self.innerHTML = tableEl.innerHTML;
@@ -78,6 +88,7 @@ const Table = (tableSize, parentQuery) => {
   return {
     render,
     update,
+    renderInvalidSpace,
   };
 };
 
