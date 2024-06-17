@@ -120,7 +120,7 @@ const Gameboard = () => {
     return Math.abs(num1 - num2);
   }
 
-  function getValidCoords(shipSize) {
+  function getInvalidCoords() {
     const mapData = getMapData();
     const invalidCoords = [];
     for (let i = 0; i < mapData.map.length; i += 1) {
@@ -141,7 +141,12 @@ const Gameboard = () => {
         invalidCoords.push([end.x + 1, end.y - 1]);
       }
     }
-    console.log(invalidCoords);
+    return invalidCoords;
+  }
+
+  function getValidCoords(shipSize) {
+    const mapData = getMapData();
+
     const freeSpaceArr = mapData.map.filter((value) => {});
     const validStartingPositions = [];
 
@@ -168,7 +173,6 @@ const Gameboard = () => {
 
     //iterate();
     // return validStartingPositions;
-    return invalidCoords;
   }
 
   function placeShipPart(coords, ship) {
@@ -246,6 +250,7 @@ const Gameboard = () => {
     getMapData,
     getValidCoords,
     getShips,
+    getInvalidCoords,
   };
 };
 
@@ -304,11 +309,12 @@ const Game = () => {
 
 const game = Game();
 game.self.gameBrd.placeShip([2, 2], 4, "horizontal");
+game.self.gameBrd.placeShip([3, 5], 4, "vertical");
 game.self.gameBrd.getValidCoords(4);
 console.log(
   game.self.gameBrd.getMapData().getCoordinateData([2, 2]).ship.getCoordinates()
 );
 tableSelf.update(game.self.gameBrd.getShips());
-tableSelf.renderInvalidSpace(game.self.gameBrd.getValidCoords(4));
+tableSelf.renderInvalidSpace(game.self.gameBrd.getInvalidCoords());
 
 export { Game, Ship };
