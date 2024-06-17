@@ -1,4 +1,4 @@
-//import { tableSelf, tableRival } from "./DOM";
+import { tableSelf, tableRival } from "./DOM";
 
 const Ship = (size) => {
   const shipSize = size;
@@ -122,46 +122,35 @@ const Gameboard = () => {
 
   function getValidCoords(shipSize) {
     const mapData = getMapData();
-    const freeSpace = mapData.map.filter((value) => !value.ship);
+    const freeSpaceArr = mapData.map.filter((value) => {
+      if (value.ship) {
+        console.log(value);
+      }
+    });
     const validStartingPositions = [];
 
+    function getHorizontalDiff(i, k) {
+      const diff = difference(freeSpaceArr[i].x, freeSpaceArr[i + k].x);
+      console.log({
+        shipStart: freeSpaceArr[i],
+        shipEnd: freeSpaceArr[i + k],
+        diff,
+      });
+      if (diff === shipSize - 1) return { valid: true };
+      return { valid: false };
+    }
+
     function iterate() {
-      for (let i = 0; i < freeSpace.length; i += 1) {
+      for (let i = 0; i < freeSpaceArr.length; i += 1) {
         // cursor is used to iterate rows/columns as they are the same size
-        const cursor = freeSpace[i];
 
-        console.log(cursor);
-
-        for (let j = 0; j < cursor.length; j += 1) {
-          for (let k = 0; k < shipSize; k += 1) {
-            // add starting position to ship size
-            // if there is room to iterate over the entire ship
-            // check if the position is directly x + 1 or y + 1 in each position in said row or column
-            // if (j + k < cursor.length) {
-            //   const yDiff = difference(row[j].y, row[j + k].y);
-            //   const xDiff = difference(col[j].x, col[j + k].x);
-            //   console.log({
-            //     vertical: {
-            //       shipStart: row[j],
-            //       shipEnd: row[j + k],
-            //       yDiff,
-            //     },
-            //     horizontal: {
-            //       shipStart: col[j],
-            //       shipEnd: col[j + k],
-            //       xDiff,
-            //     },
-            //   });
-            //   // if (yDiff === shipSize - 1) {
-            //   //   validStartingPositions.push(row[j]);
-            //   // }
-            // }
-          }
+        for (let k = 0; k < shipSize; k += 1) {
+          getHorizontalDiff(i, k);
         }
       }
     }
 
-    iterate();
+    //iterate();
     return validStartingPositions;
   }
 
@@ -282,8 +271,7 @@ const Game = () => {
     }
   }
 
-  random(self);
-  // tableSelf.update(self.gameBrd.getShips());
+  // random(self);
 
   function getPlayableShips() {
     const total = playableShips.reduce(
@@ -298,5 +286,11 @@ const Game = () => {
 };
 
 const game = Game();
+game.self.gameBrd.placeShip([2, 2], 4, "horizontal");
+game.self.gameBrd.getValidCoords(4);
+console.log(
+  game.self.gameBrd.getMapData().getCoordinateData([2, 2]).ship.getCoordinates()
+);
+tableSelf.update(game.self.gameBrd.getShips());
 
 export { Game, Ship };

@@ -27,6 +27,7 @@ const Table = (tableSize, parentQuery) => {
         battlefieldCellContent.classList = "battlefield-cell-content";
         battlefieldCellContent.dataset.x = j;
         battlefieldCellContent.dataset.y = i;
+        battlefieldCellContent.textContent = `${j},${i}`;
         tableDataCell.appendChild(battlefieldCellContent);
 
         if (battlefieldCellContent.dataset.x === 0) {
