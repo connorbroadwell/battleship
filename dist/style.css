@@ -201,7 +201,7 @@ footer {
 }
 
 .battlefield-cell-content {
-  border: 1px solid #b4b4ff;
+  border: 0.5px solid #d1fae5;
   height: 100%;
   width: 100%;
 }
@@ -241,7 +241,8 @@ footer {
 }
 
 .battlefield-self .ship {
-  background-color: #a7f3d0;
+  background-color: #6ee7b7;
+  border: solid 1px;
 }
 
 @media only screen and (min-width: 730px) {

@@ -170,7 +170,7 @@ const Gameboard = () => {
   function placeShipPart(coords, ship) {
     const mapData = getMapData();
     const mapLocation = mapData.getCoordinateData(coords);
-    if (mapLocation.ship) throw new Error("Occupied space!");
+    if (mapLocation.ship) return "occupied";
 
     mapLocation.ship = ship;
   }
@@ -262,38 +262,66 @@ const Game = () => {
   const self = Player();
   const rival = Player();
 
+  function getRemainingShips(player) {
+    let count = 0;
+    for (let i = 0; i < player.playableShips.length; i += 1) {
+      count += player.playableShips[i].howMany;
+    }
+    return count;
+  }
+
   function random(player) {
-    const playableShipIndex = Math.floor(
-      Math.random() * player.playableShips.length
-    );
-    const randAxis = Math.floor(Math.random() * 2);
-    const shipSize = player.playableShips[playableShipIndex].size;
-    let axis;
-    if (randAxis === 0) {
-      axis = "x";
-    }
-    if (randAxis === 1) {
-      axis = "y";
-    }
+    while (getRemainingShips(player) > 0) {
+      const playableShips = player.playableShips.filter(
+        (value) => value.howMany > 0
+      );
+      const playableShipIndex = Math.floor(
+        Math.random() * playableShips.length
+      );
+      const randAxis = Math.floor(Math.random() * 2);
+      const shipSize = playableShips[playableShipIndex].size;
+      let axis;
+      if (randAxis === 0) {
+        axis = "x";
+      }
+      if (randAxis === 1) {
+        axis = "y";
+      }
 
-    player.playableShips[playableShipIndex].howMany -= 1;
+      const validStartingPositionsH = player.gameBrd.getValidCoords(
+        "x",
+        shipSize
+      );
+      const validStartingPositionsV = player.gameBrd.getValidCoords(
+        "y",
+        shipSize
+      );
 
-    const validStartingPositions = player.gameBrd.getValidCoords(
-      axis,
-      shipSize
-    );
-    const coordIndex = Math.floor(
-      Math.random() * validStartingPositions.length
-    );
-    const target = validStartingPositions[coordIndex];
-    const log = {
-      playableShips: player.playableShips,
-      target,
-      axis,
-      shipSize,
-    };
-    console.log(log);
-    player.gameBrd.placeShip([target.x, target.y], shipSize, axis);
+      const validStartingPos = validStartingPositionsH.filter((space) =>
+        validStartingPositionsV.includes(space)
+      );
+      console.log(validStartingPos);
+      const coordIndex = Math.floor(Math.random() * validStartingPos.length);
+      const target = validStartingPos[coordIndex];
+      const log = {
+        playableShips: player.playableShips,
+        target,
+        axis,
+        shipSize,
+        remainingShips: getRemainingShips(player),
+      };
+      console.log(log);
+      if (
+        player.gameBrd.placeShip([target.x, target.y], shipSize, axis) ===
+        "occupied"
+      ) {
+        let axz;
+        if (axis === "x") axz = "y";
+        if (axis === "y") axz = "x";
+        player.gameBrd.placeShip([target.x, target.y], shipSize, axz);
+      }
+      playableShips[playableShipIndex].howMany -= 1;
+    }
   }
 
   random(self);
