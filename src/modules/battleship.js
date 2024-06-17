@@ -207,13 +207,12 @@ const Gameboard = () => {
     freeSpaceArr.sort((a, b) => a.x - b.x).sort((a, b) => a.y - b.y);
 
     const verticalFreeSpaceArr = mapData.getDictionary(freeSpaceArr).columns;
-    console.log(verticalFreeSpaceArr);
 
     const startingXPosArr = [];
     const startingYPosArr = [];
 
     function getHorizontalDiff(i, k) {
-      if (i + k >= freeSpaceArr.length) return;
+      if (i + k >= freeSpaceArr.length) return false;
       const diff = difference(freeSpaceArr[i].x, freeSpaceArr[i + k].x);
       console.log({
         shipStart: freeSpaceArr[i],
@@ -224,15 +223,12 @@ const Gameboard = () => {
       return { valid: false };
     }
 
-    function getVerticalDiff(i, k) {
-      if (i + k >= verticalFreeSpaceArr.length) return;
-      const diff = difference(
-        verticalFreeSpaceArr[i].y,
-        verticalFreeSpaceArr[i + k].y
-      );
+    function getVerticalDiff(column, j, k) {
+      if (j + k >= column.length) return false;
+      const diff = difference(column[j].y, column[j + k].y);
       console.log({
-        shipStart: verticalFreeSpaceArr[i],
-        shipEnd: verticalFreeSpaceArr[i + k],
+        shipStart: column[j],
+        shipEnd: column[j + k],
         diff,
       });
       if (diff === shipSize - 1) return { valid: true };
@@ -243,25 +239,30 @@ const Gameboard = () => {
       for (let i = 0; i < freeSpaceArr.length; i += 1) {
         for (let k = 0; k < shipSize; k += 1) {
           if (getHorizontalDiff(i, k).valid) {
-            startingXPosArr.push(verticalFreeSpaceArr[i]);
+            startingXPosArr.push(freeSpaceArr[i]);
           }
         }
       }
     }
 
     function iterateVertical() {
-      for (let i = 0; i < freeSpaceArr.length; i += 1) {
-        const column = freeSpaceArr[i];
+      for (let i = 0; i < verticalFreeSpaceArr.length; i += 1) {
+        const column = verticalFreeSpaceArr[i];
         for (let j = 0; j < column.length; j += 1) {
           for (let k = 0; k < shipSize; k += 1) {
-            getVerticalDiff(column, j, k);
+            if (getVerticalDiff(column, j, k).valid) {
+              startingYPosArr.push(column[j]);
+            }
           }
         }
       }
     }
 
-    // iterateHorizontal();
+    iterateHorizontal();
     iterateVertical();
+
+    console.log({ startingXPosArr, startingYPosArr });
+
     // return validStartingPositions;
   }
 
