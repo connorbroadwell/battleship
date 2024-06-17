@@ -45,7 +45,7 @@ const Gameboard = () => {
     const arr = [];
     for (let i = 0; i < size; i += 1) {
       for (let j = 0; j < size; j += 1) {
-        arr.push({ x: i, y: j, row: i + 1, col: getColMarker(j) });
+        arr.push({ x: j, y: i, row: i + 1, col: getColMarker(j) });
       }
     }
     return arr;
