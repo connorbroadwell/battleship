@@ -250,6 +250,14 @@ footer {
   background-color: red;
 }
 
+.battlefield-self .x-starting {
+  background-color: blueviolet;
+}
+
+.battlefield-self .y-starting {
+  background-color: orangered;
+}
+
 @media only screen and (min-width: 730px) {
   .battlefields {
     grid-template-columns: auto auto;

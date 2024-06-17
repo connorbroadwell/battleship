@@ -80,6 +80,16 @@ const Table = (tableSize, parentQuery) => {
     }
   }
 
+  function renderClassname(className, array) {
+    const arr = array;
+    for (let i = 0; i < arr.length; i += 1) {
+      const cell = document.querySelector(
+        `${parentQuery} .battlefield-cell-content[data-x="${arr[i].x}"][data-y="${arr[i].y}"]`
+      );
+      cell.classList.add(className);
+    }
+  }
+
   function render() {
     // eslint-disable-next-line no-param-reassign
     self.innerHTML = tableEl.innerHTML;
@@ -89,6 +99,7 @@ const Table = (tableSize, parentQuery) => {
     render,
     update,
     renderInvalidSpace,
+    renderClassname,
   };
 };
 
