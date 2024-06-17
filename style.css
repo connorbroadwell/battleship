@@ -1,0 +1,269 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Tiny5&display=swap");
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* css reset end */
+/* begin styling */
+
+:root {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+body {
+  overflow: hidden;
+}
+
+.body-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "header"
+    "main"
+    "footer";
+  height: 100vh;
+  grid-template-rows: min-content 1fr min-content;
+}
+
+header {
+  grid-area: header;
+}
+
+main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+footer {
+  grid-area: footer;
+  display: flex;
+  justify-content: center;
+  color: grey;
+}
+
+.battlefields {
+  display: grid;
+  width: 100%;
+  justify-content: center;
+}
+
+.battlefield {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(50vh - 10rem);
+}
+
+.battlefield-table {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+}
+
+.battlefield-rival {
+  padding-top: 3rem;
+}
+
+.battlefield-cell-content {
+  /*border: 0.5px solid #d1fae5;*/
+  border: 0.5px solid black;
+  height: 100%;
+  width: 100%;
+}
+
+.battlefield-self-label,
+.battlefield-rival-label {
+  padding: 1rem;
+  font-size: 2rem;
+  font-family: "Tiny5", "Poppins", sans-serif;
+  display: flex;
+  justify-content: center;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.title-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.notification-wrap {
+  padding-top: 1rem;
+}
+
+.notification {
+  display: flex;
+  justify-content: center;
+}
+
+.battlefield-self .ship {
+  background-color: #6ee7b7;
+  border: solid 1px;
+}
+
+@media only screen and (min-width: 730px) {
+  .battlefields {
+    grid-template-columns: auto auto;
+    grid-template-areas: "battlefield-self-label battlefield-self battlefield-rival battlefield-rival-label";
+    align-items: center;
+  }
+
+  .battlefield-rival {
+    padding-top: 0;
+  }
+
+  .battlefield-self {
+    padding-right: 3rem;
+  }
+}
+
+@media only screen and (min-width: 990px) {
+  .battlefield-self {
+    margin-right: calc(max(5rem, 50%));
+  }
+}
