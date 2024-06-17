@@ -156,7 +156,7 @@ const Gameboard = () => {
               getColumnData(column[j]),
               getColumnData(column[j + k])
             );
-            // console.log({ test: column[j], test2: column[j + k], diff });
+            console.log({ test: column[j], test2: column[j + k], diff });
             if (diff === shipSize - 1) {
               validStartingPositions.push(column[j]);
             }
@@ -300,7 +300,7 @@ const Game = () => {
       const validStartingPos = validStartingPositionsH.filter((space) =>
         validStartingPositionsV.includes(space)
       );
-      console.log(validStartingPos);
+      // console.log(validStartingPos);
       const coordIndex = Math.floor(Math.random() * validStartingPos.length);
       const target = validStartingPos[coordIndex];
       const log = {
@@ -310,7 +310,7 @@ const Game = () => {
         shipSize,
         remainingShips: getRemainingShips(player),
       };
-      console.log(log);
+      // console.log(log);
       if (
         player.gameBrd.placeShip([target.x, target.y], shipSize, axis) ===
         "occupied"
