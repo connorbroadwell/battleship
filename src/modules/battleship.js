@@ -1,4 +1,4 @@
-import { tableSelf, tableRival } from "./DOM";
+//import { tableSelf, tableRival } from "./DOM";
 
 const Ship = (size) => {
   const shipSize = size;
@@ -120,57 +120,65 @@ const Gameboard = () => {
     return Math.abs(num1 - num2);
   }
 
-  function getValidCoords(axis, shipSize) {
+  function getValidCoords(shipSize) {
     const mapData = getMapData();
     const freeSpace = mapData.map.filter((value) => !value.ship);
     const validStartingPositions = [];
-    let dictionary;
 
-    function getColumns() {
-      return mapData.getDictionary(freeSpace).columns;
+    function getDictionary() {
+      const dict = mapData.getDictionary(freeSpace);
+      if (dict.columns.length === dict.rows.length)
+        return { cursor: dict.columns, dictionary: dict };
+      throw new Error("Invalid dictionary length");
     }
 
-    function getRows() {
-      return mapData.getDictionary(freeSpace).rows;
-    }
+    const dictionary = getDictionary();
 
-    function getColumnData(columnData) {
-      if (axis === "x") return columnData.x;
-      if (axis === "y") return columnData.y;
-      return null;
-    }
+    function iterate() {
+      for (let i = 0; i < dictionary.cursor.length; i += 1) {
+        // cursor is used to iterate rows/columns as they are the same size
+        const cursor = dictionary.cursor[i];
+        const row = dictionary.dictionary.rows[i];
+        const col = dictionary.dictionary.columns[i];
 
-    if (axis === "x") {
-      dictionary = getColumns();
-    } else if (axis === "y") {
-      dictionary = getRows();
-    }
+        for (let j = 0; j < cursor.length; j += 1) {
+          for (let k = 0; k < shipSize; k += 1) {
+            // add starting position to ship size
+            // if there is room to iterate over the entire ship
+            // check if the position is directly x + 1 or y + 1 in each position in said row or column
+            if (j + k < cursor.length) {
+              const yDiff = difference(row[j].y, row[j + k].y);
+              const xDiff = difference(col[j].x, col[j + k].x);
+              console.log({
+                vertical: {
+                  shipStart: row[j],
+                  shipEnd: row[j + k],
+                  yDiff,
+                },
+                horizontal: {
+                  shipStart: col[j],
+                  shipEnd: col[j + k],
+                  xDiff,
+                },
+              });
 
-    for (let i = 0; i < dictionary.length; i += 1) {
-      const column = dictionary[i];
-
-      for (let j = 0; j < column.length; j += 1) {
-        for (let k = 0; k < shipSize; k += 1) {
-          if (j + k < column.length) {
-            const diff = difference(
-              getColumnData(column[j]),
-              getColumnData(column[j + k])
-            );
-            console.log({ test: column[j], test2: column[j + k], diff });
-            if (diff === shipSize - 1) {
-              validStartingPositions.push(column[j]);
+              // if (yDiff === shipSize - 1) {
+              //   validStartingPositions.push(row[j]);
+              // }
             }
           }
         }
       }
     }
+
+    iterate();
     return validStartingPositions;
   }
 
   function placeShipPart(coords, ship) {
     const mapData = getMapData();
     const mapLocation = mapData.getCoordinateData(coords);
-    if (mapLocation.ship) return "occupied";
+    if (mapLocation.ship) throw new Error("Occupied space");
 
     mapLocation.ship = ship;
   }
@@ -278,54 +286,14 @@ const Game = () => {
       const playableShipIndex = Math.floor(
         Math.random() * playableShips.length
       );
-      const randAxis = Math.floor(Math.random() * 2);
       const shipSize = playableShips[playableShipIndex].size;
-      let axis;
-      if (randAxis === 0) {
-        axis = "x";
-      }
-      if (randAxis === 1) {
-        axis = "y";
-      }
 
-      const validStartingPositionsH = player.gameBrd.getValidCoords(
-        "x",
-        shipSize
-      );
-      const validStartingPositionsV = player.gameBrd.getValidCoords(
-        "y",
-        shipSize
-      );
-
-      const validStartingPos = validStartingPositionsH.filter((space) =>
-        validStartingPositionsV.includes(space)
-      );
-      // console.log(validStartingPos);
-      const coordIndex = Math.floor(Math.random() * validStartingPos.length);
-      const target = validStartingPos[coordIndex];
-      const log = {
-        playableShips: player.playableShips,
-        target,
-        axis,
-        shipSize,
-        remainingShips: getRemainingShips(player),
-      };
-      // console.log(log);
-      if (
-        player.gameBrd.placeShip([target.x, target.y], shipSize, axis) ===
-        "occupied"
-      ) {
-        let axz;
-        if (axis === "x") axz = "y";
-        if (axis === "y") axz = "x";
-        player.gameBrd.placeShip([target.x, target.y], shipSize, axz);
-      }
       playableShips[playableShipIndex].howMany -= 1;
     }
   }
 
   random(self);
-  tableSelf.update(self.gameBrd.getShips());
+  // tableSelf.update(self.gameBrd.getShips());
 
   function getPlayableShips() {
     const total = playableShips.reduce(
