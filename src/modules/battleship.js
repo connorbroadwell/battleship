@@ -124,36 +124,49 @@ const Gameboard = () => {
     const mapData = getMapData();
     const invalidCoords = [];
 
+    function push(adjacentSpace) {
+      if (
+        invalidCoords.some(
+          (subArr) =>
+            JSON.stringify(subArr) ===
+            JSON.stringify([adjacentSpace[0], adjacentSpace[1]])
+        )
+      ) {
+        return;
+      }
+      invalidCoords.push([adjacentSpace[0], adjacentSpace[1]]);
+    }
+
     function getHorizontal(coords) {
       for (let j = 0; j < coords.length; j += 1) {
-        invalidCoords.push([coords[j].x, coords[j].y + 1]);
-        invalidCoords.push([coords[j].x, coords[j].y - 1]);
+        push([coords[j].x, coords[j].y + 1]);
+        push([coords[j].x, coords[j].y - 1]);
       }
       const start = coords[0];
       const end = coords[coords.length - 1];
-      invalidCoords.push([start.x - 1, start.y]);
-      invalidCoords.push([start.x - 1, start.y + 1]);
-      invalidCoords.push([start.x - 1, start.y - 1]);
+      push([start.x - 1, start.y]);
+      push([start.x - 1, start.y + 1]);
+      push([start.x - 1, start.y - 1]);
 
-      invalidCoords.push([end.x + 1, end.y]);
-      invalidCoords.push([end.x + 1, end.y + 1]);
-      invalidCoords.push([end.x + 1, end.y - 1]);
+      push([end.x + 1, end.y]);
+      push([end.x + 1, end.y + 1]);
+      push([end.x + 1, end.y - 1]);
     }
 
     function getVertical(coords) {
       for (let j = 0; j < coords.length; j += 1) {
-        invalidCoords.push([coords[j].x + 1, coords[j].y]);
-        invalidCoords.push([coords[j].x - 1, coords[j].y]);
+        push([coords[j].x + 1, coords[j].y]);
+        push([coords[j].x - 1, coords[j].y]);
       }
       const start = coords[0];
       const end = coords[coords.length - 1];
-      invalidCoords.push([start.x, start.y - 1]);
-      invalidCoords.push([start.x + 1, start.y - 1]);
-      invalidCoords.push([start.x - 1, start.y - 1]);
+      push([start.x, start.y - 1]);
+      push([start.x + 1, start.y - 1]);
+      push([start.x - 1, start.y - 1]);
 
-      invalidCoords.push([end.x, end.y + 1]);
-      invalidCoords.push([end.x - 1, end.y + 1]);
-      invalidCoords.push([end.x + 1, end.y + 1]);
+      push([end.x, end.y + 1]);
+      push([end.x - 1, end.y + 1]);
+      push([end.x + 1, end.y + 1]);
     }
 
     for (let i = 0; i < mapData.map.length; i += 1) {
@@ -173,11 +186,34 @@ const Gameboard = () => {
 
   function getValidCoords(shipSize) {
     const mapData = getMapData();
+    const invalidCrds = getInvalidCoords();
+    const spacesContainingShips = mapData.map.filter((value) => value.ship);
+    const invalidArr = spacesContainingShips.concat(invalidCrds);
 
-    const freeSpaceArr = mapData.map.filter((value) => {});
-    const validStartingPositions = [];
+    function filterUniqueElements(array1, array2) {
+      return array1.filter((item1) => {
+        const x1 = item1.x !== undefined ? item1.x : item1[0];
+        const y1 = item1.y !== undefined ? item1.y : item1[1];
+
+        return !array2.some((item2) => {
+          const x2 = item2.x !== undefined ? item2.x : item2[0];
+          const y2 = item2.y !== undefined ? item2.y : item2[1];
+          return x1 === x2 && y1 === y2;
+        });
+      });
+    }
+
+    const freeSpaceArr = filterUniqueElements(mapData.map, invalidArr);
+    freeSpaceArr.sort((a, b) => a.x - b.x).sort((a, b) => a.y - b.y);
+
+    const verticalFreeSpaceArr = mapData.getDictionary(freeSpaceArr).columns;
+    console.log(verticalFreeSpaceArr);
+
+    const startingXPosArr = [];
+    const startingYPosArr = [];
 
     function getHorizontalDiff(i, k) {
+      if (i + k >= freeSpaceArr.length) return;
       const diff = difference(freeSpaceArr[i].x, freeSpaceArr[i + k].x);
       console.log({
         shipStart: freeSpaceArr[i],
@@ -188,17 +224,44 @@ const Gameboard = () => {
       return { valid: false };
     }
 
-    function iterate() {
-      for (let i = 0; i < freeSpaceArr.length; i += 1) {
-        // cursor is used to iterate rows/columns as they are the same size
+    function getVerticalDiff(i, k) {
+      if (i + k >= verticalFreeSpaceArr.length) return;
+      const diff = difference(
+        verticalFreeSpaceArr[i].y,
+        verticalFreeSpaceArr[i + k].y
+      );
+      console.log({
+        shipStart: verticalFreeSpaceArr[i],
+        shipEnd: verticalFreeSpaceArr[i + k],
+        diff,
+      });
+      if (diff === shipSize - 1) return { valid: true };
+      return { valid: false };
+    }
 
+    function iterateHorizontal() {
+      for (let i = 0; i < freeSpaceArr.length; i += 1) {
         for (let k = 0; k < shipSize; k += 1) {
-          getHorizontalDiff(i, k);
+          if (getHorizontalDiff(i, k).valid) {
+            startingXPosArr.push(verticalFreeSpaceArr[i]);
+          }
         }
       }
     }
 
-    //iterate();
+    function iterateVertical() {
+      for (let i = 0; i < freeSpaceArr.length; i += 1) {
+        const column = freeSpaceArr[i];
+        for (let j = 0; j < column.length; j += 1) {
+          for (let k = 0; k < shipSize; k += 1) {
+            getVerticalDiff(column, j, k);
+          }
+        }
+      }
+    }
+
+    // iterateHorizontal();
+    iterateVertical();
     // return validStartingPositions;
   }
 
