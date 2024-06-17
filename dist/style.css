@@ -246,6 +246,11 @@ footer {
   border: solid 1px;
 }
 
+.battlefield-rival .ship {
+  background-color: black;
+  border: solid 1px;
+}
+
 .battlefield-self .invalid {
   background-color: red;
 }

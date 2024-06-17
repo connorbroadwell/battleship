@@ -261,7 +261,7 @@ const Gameboard = () => {
     iterateHorizontal();
     iterateVertical();
 
-    console.log({ startingXPosArr, startingYPosArr });
+    // console.log({ startingXPosArr, startingYPosArr });
 
     return { startingXPosArr, startingYPosArr };
   }
@@ -411,11 +411,11 @@ const Game = () => {
         shipSize,
         remainingShips: getRemainingShips(player),
       };
-      console.log(log);
     }
   }
 
   random(self);
+  random(rival);
 
   function getPlayableShips() {
     const total = playableShips.reduce(
@@ -430,17 +430,7 @@ const Game = () => {
 };
 
 const game = Game();
-// game.self.gameBrd.placeShip([2, 2], 4, "horizontal");
-// game.self.gameBrd.placeShip([3, 5], 4, "vertical");
-// game.self.gameBrd.placeShip([7, 6], 1, "vertical");
-// game.self.gameBrd.getValidCoords(4);
-// console.log(
-//   game.self.gameBrd.getMapData().getCoordinateData([3, 5]).ship.getCoordinates()
-// );
-// const validCoords = game.self.gameBrd.getValidCoords(4);
-// tableSelf.renderClassname("x-starting", validCoords.startingXPosArr);
-// tableSelf.renderClassname("y-starting", validCoords.startingYPosArr);
 tableSelf.update(game.self.gameBrd.getShips());
-// tableSelf.renderInvalidSpace(game.self.gameBrd.getInvalidCoords());
+tableRival.update(game.rival.gameBrd.getShips());
 
 export { Game, Ship };
