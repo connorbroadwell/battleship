@@ -125,47 +125,37 @@ const Gameboard = () => {
     const freeSpace = mapData.map.filter((value) => !value.ship);
     const validStartingPositions = [];
 
-    function getDictionary() {
-      const dict = mapData.getDictionary(freeSpace);
-      if (dict.columns.length === dict.rows.length)
-        return { cursor: dict.columns, dictionary: dict };
-      throw new Error("Invalid dictionary length");
-    }
-
-    const dictionary = getDictionary();
-
     function iterate() {
-      for (let i = 0; i < dictionary.cursor.length; i += 1) {
+      for (let i = 0; i < freeSpace.length; i += 1) {
         // cursor is used to iterate rows/columns as they are the same size
-        const cursor = dictionary.cursor[i];
-        const row = dictionary.dictionary.rows[i];
-        const col = dictionary.dictionary.columns[i];
+        const cursor = freeSpace[i];
+
+        console.log(cursor);
 
         for (let j = 0; j < cursor.length; j += 1) {
           for (let k = 0; k < shipSize; k += 1) {
             // add starting position to ship size
             // if there is room to iterate over the entire ship
             // check if the position is directly x + 1 or y + 1 in each position in said row or column
-            if (j + k < cursor.length) {
-              const yDiff = difference(row[j].y, row[j + k].y);
-              const xDiff = difference(col[j].x, col[j + k].x);
-              console.log({
-                vertical: {
-                  shipStart: row[j],
-                  shipEnd: row[j + k],
-                  yDiff,
-                },
-                horizontal: {
-                  shipStart: col[j],
-                  shipEnd: col[j + k],
-                  xDiff,
-                },
-              });
-
-              // if (yDiff === shipSize - 1) {
-              //   validStartingPositions.push(row[j]);
-              // }
-            }
+            // if (j + k < cursor.length) {
+            //   const yDiff = difference(row[j].y, row[j + k].y);
+            //   const xDiff = difference(col[j].x, col[j + k].x);
+            //   console.log({
+            //     vertical: {
+            //       shipStart: row[j],
+            //       shipEnd: row[j + k],
+            //       yDiff,
+            //     },
+            //     horizontal: {
+            //       shipStart: col[j],
+            //       shipEnd: col[j + k],
+            //       xDiff,
+            //     },
+            //   });
+            //   // if (yDiff === shipSize - 1) {
+            //   //   validStartingPositions.push(row[j]);
+            //   // }
+            // }
           }
         }
       }
