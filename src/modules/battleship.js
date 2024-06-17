@@ -123,22 +123,49 @@ const Gameboard = () => {
   function getInvalidCoords() {
     const mapData = getMapData();
     const invalidCoords = [];
+
+    function getHorizontal(coords) {
+      for (let j = 0; j < coords.length; j += 1) {
+        invalidCoords.push([coords[j].x, coords[j].y + 1]);
+        invalidCoords.push([coords[j].x, coords[j].y - 1]);
+      }
+      const start = coords[0];
+      const end = coords[coords.length - 1];
+      invalidCoords.push([start.x - 1, start.y]);
+      invalidCoords.push([start.x - 1, start.y + 1]);
+      invalidCoords.push([start.x - 1, start.y - 1]);
+
+      invalidCoords.push([end.x + 1, end.y]);
+      invalidCoords.push([end.x + 1, end.y + 1]);
+      invalidCoords.push([end.x + 1, end.y - 1]);
+    }
+
+    function getVertical(coords) {
+      for (let j = 0; j < coords.length; j += 1) {
+        invalidCoords.push([coords[j].x + 1, coords[j].y]);
+        invalidCoords.push([coords[j].x - 1, coords[j].y]);
+      }
+      const start = coords[0];
+      const end = coords[coords.length - 1];
+      invalidCoords.push([start.x, start.y - 1]);
+      invalidCoords.push([start.x + 1, start.y - 1]);
+      invalidCoords.push([start.x - 1, start.y - 1]);
+
+      invalidCoords.push([end.x, end.y + 1]);
+      invalidCoords.push([end.x - 1, end.y + 1]);
+      invalidCoords.push([end.x + 1, end.y + 1]);
+    }
+
     for (let i = 0; i < mapData.map.length; i += 1) {
       if (mapData.map[i].ship) {
         const coords = mapData.map[i].ship.getCoordinates();
-        for (let j = 0; j < coords.length; j += 1) {
-          invalidCoords.push([coords[j].x, coords[j].y + 1]);
-          invalidCoords.push([coords[j].x, coords[j].y - 1]);
+        if (coords.length === 1) {
+          getHorizontal(coords);
+        } else if (coords[0].y + 1 === coords[1].y) {
+          getVertical(coords);
+        } else {
+          getHorizontal(coords);
         }
-        const start = coords[0];
-        const end = coords[coords.length - 1];
-        invalidCoords.push([start.x - 1, start.y]);
-        invalidCoords.push([start.x - 1, start.y + 1]);
-        invalidCoords.push([start.x - 1, start.y - 1]);
-
-        invalidCoords.push([end.x + 1, end.y]);
-        invalidCoords.push([end.x + 1, end.y + 1]);
-        invalidCoords.push([end.x + 1, end.y - 1]);
       }
     }
     return invalidCoords;
@@ -310,9 +337,10 @@ const Game = () => {
 const game = Game();
 game.self.gameBrd.placeShip([2, 2], 4, "horizontal");
 game.self.gameBrd.placeShip([3, 5], 4, "vertical");
+game.self.gameBrd.placeShip([7, 6], 1, "vertical");
 game.self.gameBrd.getValidCoords(4);
 console.log(
-  game.self.gameBrd.getMapData().getCoordinateData([2, 2]).ship.getCoordinates()
+  game.self.gameBrd.getMapData().getCoordinateData([3, 5]).ship.getCoordinates()
 );
 tableSelf.update(game.self.gameBrd.getShips());
 tableSelf.renderInvalidSpace(game.self.gameBrd.getInvalidCoords());
