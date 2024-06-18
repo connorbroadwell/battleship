@@ -516,5 +516,7 @@ tableRival.addAttackEventListener((e) => {
   const y = Number(e.target.dataset.y);
   const attack = game.rival.gameBrd.receiveAttack([x, y]);
   console.log(attack);
+  if (attack !== null) tableRival.renderAttackResult(attack, [x, y]);
 });
+
 export { Game, Ship };

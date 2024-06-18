@@ -251,6 +251,59 @@ footer {
   box-sizing: border-box;
 }
 
+.miss-icon {
+  display: block;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  height: 4px;
+  width: 4px;
+  background: #333;
+  border-radius: 50%;
+  margin-top: -2px;
+  margin-left: -2px;
+}
+
+.hit {
+  position: relative;
+}
+
+.hit-icon {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.hit-icon::after {
+  top: 50%;
+  height: 2px;
+  left: -25%;
+  width: 150%;
+  margin-left: -1px;
+}
+
+.hit-icon::before {
+  left: 50%;
+  width: 2px;
+  top: -25%;
+  height: 150%;
+  margin-top: 1px;
+}
+
+.hit-icon::before,
+.hit-icon::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  background: red;
+  transform: rotate(-45deg);
+}
+
 .battlefield-self .ship {
   background-color: #6ee7b7;
   border: solid 1px #10b981;

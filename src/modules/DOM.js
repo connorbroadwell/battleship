@@ -112,6 +112,24 @@ const Table = (tableSize, parentQuery) => {
       .forEach((value) => value.addEventListener("click", attackEvent));
   }
 
+  function renderAttackResult(attack, coords) {
+    const cell = document.querySelector(
+      `${parentQuery} .battlefield-cell-content.attack-cursor[data-x="${coords[0]}"][data-y="${coords[1]}"]`
+    );
+    if (attack.miss) {
+      cell.classList.replace("attack-cursor", "miss");
+      const missIcon = document.createElement("span");
+      missIcon.classList = "miss-icon";
+      cell.appendChild(missIcon);
+    }
+    if (attack.hit) {
+      cell.classList.replace("attack-cursor", "hit");
+      const hitIcon = document.createElement("span");
+      hitIcon.classList = "hit-icon";
+      cell.appendChild(hitIcon);
+    }
+  }
+
   return {
     render,
     update,
@@ -120,6 +138,7 @@ const Table = (tableSize, parentQuery) => {
     toggleDisabled,
     toggleAttackCursor,
     addAttackEventListener,
+    renderAttackResult,
   };
 };
 
