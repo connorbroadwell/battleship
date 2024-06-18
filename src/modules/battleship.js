@@ -442,7 +442,9 @@ const Game = () => {
       const getTarget = () => validStartingPositions[coordIndex];
 
       let target = getTarget();
-      if (target === undefined) target = getTarget();
+      while (target === undefined || target === null) {
+        target = getTarget();
+      }
 
       const log = {
         playableShips: player.playableShips,
