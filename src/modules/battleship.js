@@ -391,10 +391,15 @@ const Gameboard = () => {
       const shp = mapData.space(coords).ship().getShip();
       shp.hit();
       mapData.space(coords).setHit();
-      if (shp.isSunk()) {
-        if (mapData.allShips().sunk()) return { gameover: true };
-        return { sunk: shp.isSunk() };
+      if (shp.isSunk() && !mapData.allShips().sunk()) {
+        return { sunk: shp.isSunk(), shipCords: shp.getCoordinates() };
       }
+      if (mapData.allShips().sunk())
+        return {
+          sunk: shp.isSunk(),
+          gameover: true,
+          shipCords: shp.getCoordinates(),
+        };
       return { hit: mapData.space(coords).isHit() };
     }
     mapData.space(coords).setMissed();
@@ -512,8 +517,8 @@ tableSelf.toggleDisabled();
 tableRival.toggleAttackCursor();
 renderNotification("It is your turn, click on your Rivals board to attack");
 tableRival.addAttackEventListener((e) => {
-  const x = Number(e.target.dataset.x);
-  const y = Number(e.target.dataset.y);
+  const x = Number(e.currentTarget.dataset.x);
+  const y = Number(e.currentTarget.dataset.y);
   const attack = game.rival.gameBrd.receiveAttack([x, y]);
   console.log(attack);
   if (attack !== null) tableRival.renderAttackResult(attack, [x, y]);

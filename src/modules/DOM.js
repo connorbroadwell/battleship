@@ -122,11 +122,20 @@ const Table = (tableSize, parentQuery) => {
       missIcon.classList = "miss-icon";
       cell.appendChild(missIcon);
     }
-    if (attack.hit) {
+    if (attack.hit || attack.sunk) {
       cell.classList.replace("attack-cursor", "hit");
       const hitIcon = document.createElement("span");
       hitIcon.classList = "hit-icon";
       cell.appendChild(hitIcon);
+    }
+    if (attack.sunk) {
+      attack.shipCords.forEach((value) => {
+        document
+          .querySelector(
+            `${parentQuery} .battlefield-cell-content[data-x="${value.x}"][data-y="${value.y}"]`
+          )
+          .classList.add("sunk");
+      });
     }
   }
 
