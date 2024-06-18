@@ -1,4 +1,6 @@
 import { tableSelf, tableRival } from "./DOM";
+import { logArrays, difference } from "./utility";
+const { stripIndents } = require("common-tags");
 
 const Ship = (size, axis) => {
   const shipSize = size;
@@ -58,7 +60,7 @@ const Gameboard = () => {
   const map = init();
 
   function getMapData() {
-    function getDictionary(mapArr = map) {
+    function getDictionary(mapArr = map.slice()) {
       const dictionary = {
         columns: [],
         rows: [],
@@ -87,32 +89,73 @@ const Gameboard = () => {
       return map.slice()[index];
     }
 
-    function coordinate(coord) {
+    function space(coord) {
       const index = getIndexByCoordinate(coord);
       function get() {
         return getCoordinateByIndex(index);
+      }
+
+      function hasShip() {
+        if (map.slice()[index].ship) return true;
+        return false;
       }
 
       function setOccupied(bool) {
         map[index].occupied = bool;
       }
 
-      function setShip(ship) {
-        map[index].ship = ship;
+      function isOccupied() {
+        if (map.slice()[index].occupied) return true;
+        return false;
       }
 
-      return { get, setOccupied, setShip };
+      function setShip(shp) {
+        if (hasShip() || isOccupied()) return;
+        map[index].ship = shp;
+      }
+
+      function ship() {
+        if (!hasShip()) throw new Error("There is not a ship on this tile");
+        const shp = map.slice()[index].ship;
+        function getShip() {
+          return shp;
+        }
+        function getLog() {
+          return stripIndents`
+          There is a ship at ${shp.getCoordinates()}
+          Row: ${shp.row}
+          Column: ${shp.col}
+          Size: ${shp.getSize()}
+          Axis: ${shp.getAxis()}
+          Alive: ${!shp.isSunk()}
+          `;
+        }
+        return { getShip, getLog };
+      }
+
+      return { get, setOccupied, setShip, hasShip, ship };
     }
 
     function getFreeSpaces() {
-      return map.filter((value) => !value.ship && !value.occupied);
+      return map.slice().filter((value) => !value.ship && !value.occupied);
+    }
+
+    function allShips() {
+      const arr = map.slice().filter((value) => value.ship);
+
+      const getAll = () => arr;
+      const log = () => logArrays(arr);
+      const sunk = () =>
+        arr.filter((value) => !value.ship.isSunk()).length === 0;
+
+      return { getAll, log, sunk };
     }
 
     return {
-      coordinate,
-      map,
+      space,
       getDictionary,
       getFreeSpaces,
+      allShips,
     };
   }
 
@@ -120,32 +163,10 @@ const Gameboard = () => {
     return size;
   }
 
-  function allShipsSunk() {
-    const mapData = getMapData();
-    const ships = mapData.map.filter((value) => {
-      if (value.ship) {
-        return !value.ship.isSunk();
-      }
-      return false;
-    });
-    if (ships.length === 0) return true;
-    return false;
-  }
-
-  function getShips() {
-    const mapData = getMapData();
-    return mapData.map.filter((value) => value.ship);
-  }
-
-  function difference(num1, num2) {
-    return Math.abs(num1 - num2);
-  }
-
   function getValidCoords(shipSize) {
-    const mapData = getMapData();
-    const freeSpaceArr = mapData.getFreeSpaces();
-
     function vertical() {
+      const mapData = getMapData();
+      const freeSpaceArr = mapData.getFreeSpaces();
       const verticalFreeSpaceArr = mapData.getDictionary(freeSpaceArr).columns;
       const startingYPosArr = [];
 
@@ -175,6 +196,8 @@ const Gameboard = () => {
     }
 
     function horizontal() {
+      const mapData = getMapData();
+      const freeSpaceArr = mapData.getFreeSpaces();
       const startingXPosArr = [];
       function getHorizontalDiff(i, k) {
         if (i + k >= freeSpaceArr.length) return false;
@@ -235,10 +258,7 @@ const Gameboard = () => {
       );
 
       for (let i = 0; i < adjacentOccupiedSpaceVertical.length; i += 1) {
-        const mapLocation = mapData.getCoordinateData(
-          adjacentOccupiedSpaceVertical[i]
-        );
-        mapLocation.occupied = true;
+        mapData.space(adjacentOccupiedSpaceVertical[i]).setOccupied(true);
       }
       return adjacentOccupiedSpaceVertical;
     }
@@ -268,10 +288,7 @@ const Gameboard = () => {
       );
 
       for (let i = 0; i < adjacentOccupiedSpaceHorizontal.length; i += 1) {
-        const mapLocation = mapData.getCoordinateData(
-          adjacentOccupiedSpaceHorizontal[i]
-        );
-        mapLocation.occupied = true;
+        mapData.space(adjacentOccupiedSpaceHorizontal[i]).setOccupied(true);
       }
       return adjacentOccupiedSpaceHorizontal;
     }
@@ -285,14 +302,7 @@ const Gameboard = () => {
   }
 
   function placeShipPart(coords, ship) {
-    const mapData = getMapData();
-    const mapLocation = mapData.getCoordinateData(coords);
-    if (mapLocation.ship) {
-      console.log("dupe");
-      return;
-    }
-
-    mapLocation.ship = ship;
+    getMapData().space(coords).setShip(ship);
   }
 
   function placeShip(coords, shipSize, axis) {
@@ -313,23 +323,23 @@ const Gameboard = () => {
 
     function pushCoordDataIntoShip(data) {
       const mapCoordsClone = JSON.parse(
-        JSON.stringify(mapData.getCoordinateData(data))
+        JSON.stringify(mapData.space(data).get())
       );
       delete mapCoordsClone.ship;
       arrayCords.push(mapCoordsClone);
     }
 
-    for (let i = 0; i < shipSize; i += 1) {
-      if (axis === "x") {
-        if (coords[0] + shipSize <= size) {
+    const shpSize = ship.getSize();
+
+    for (let i = 0; i < shpSize; i += 1) {
+      if (ship.getAxis() === "x") {
+        if (coords[0] + shpSize <= size) {
           cordData = [coords[0] + i, coords[1]];
         }
-      } else if (axis === "y") {
-        if (coords[1] + shipSize <= size) {
+      } else if (ship.getAxis() === "y") {
+        if (coords[1] + shpSize <= size) {
           cordData = [coords[0], coords[1] + i];
         }
-      } else {
-        throw new Error("Invalid placement: Ship will not fit");
       }
 
       if (typeof cordData === "undefined" || cordData === null) {
@@ -362,11 +372,9 @@ const Gameboard = () => {
     getSize,
     placeShip,
     placeShipPart,
-    allShipsSunk,
     receiveAttack,
     getMapData,
     getValidCoords,
-    getShips,
   };
 };
 
@@ -430,7 +438,11 @@ const Game = () => {
       const coordIndex = Math.floor(
         Math.random() * validStartingPositions.length
       );
-      const target = validStartingPositions[coordIndex];
+
+      const getTarget = () => validStartingPositions[coordIndex];
+
+      let target = getTarget();
+      if (target === undefined) target = getTarget();
 
       const log = {
         playableShips: player.playableShips,
@@ -438,8 +450,11 @@ const Game = () => {
         axis,
         shipSize,
         remainingShips: getRemainingShipsToPlace(player),
+        validStartingPositions,
+        coordIndex,
       };
 
+      console.log(log);
       player.gameBrd.placeShip([target.x, target.y], shipSize, axis);
 
       playableShips[playableShipIndex].howMany -= 1;
@@ -450,21 +465,13 @@ const Game = () => {
   }
 
   random(self);
+  random(rival);
 
-  function getPlayableShips() {
-    const total = playableShips.reduce(
-      // eslint-disable-next-line no-return-assign, no-param-reassign
-      (prev, cur) => (cur.howMany += prev.howMany)
-    );
-
-    return { playableShips, total };
-  }
-
-  return { getPlayableShips, self, rival };
+  return { self, rival };
 };
 
 const game = Game();
-tableSelf.update(game.self.gameBrd.getShips());
-tableRival.update(game.rival.gameBrd.getShips());
+tableSelf.update(game.self.gameBrd.getMapData().allShips().getAll());
+tableRival.update(game.rival.gameBrd.getMapData().allShips().getAll());
 
 export { Game, Ship };

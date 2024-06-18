@@ -2,7 +2,11 @@ const path = require("path");
 
 module.exports = {
   mode: "development",
-  entry: ["./src/modules/DOM.js", "./src/modules/battleship.js"],
+  entry: [
+    "./src/modules/DOM.js",
+    "./src/modules/battleship.js",
+    "./src/modules/utility.js",
+  ],
   devServer: {
     static: {
       directory: path.join(__dirname, "dist"),

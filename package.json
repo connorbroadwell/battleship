@@ -26,6 +26,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "common-tags": "^1.8.2",
     "webpack-dev-server": "^4.15.1"
   }
 }
