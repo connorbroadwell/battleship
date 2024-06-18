@@ -1,4 +1,4 @@
-import { tableSelf, tableRival } from "./DOM";
+import { tableSelf, tableRival, renderNotification } from "./DOM";
 import { logArrays, difference } from "./utility";
 const { stripIndents } = require("common-tags");
 
@@ -100,6 +100,24 @@ const Gameboard = () => {
         return false;
       }
 
+      function isHit() {
+        if (map.slice()[index].hit) return true;
+        return false;
+      }
+
+      function setHit() {
+        map[index].hit = true;
+      }
+
+      function hasMissed() {
+        if (map.slice()[index].miss) return true;
+        return false;
+      }
+
+      function setMissed() {
+        map[index].miss = true;
+      }
+
       function setOccupied(bool) {
         map[index].occupied = bool;
       }
@@ -133,7 +151,17 @@ const Gameboard = () => {
         return { getShip, getLog };
       }
 
-      return { get, setOccupied, setShip, hasShip, ship };
+      return {
+        get,
+        setOccupied,
+        setShip,
+        hasShip,
+        ship,
+        isHit,
+        setHit,
+        hasMissed,
+        setMissed,
+      };
     }
 
     function getFreeSpaces() {
@@ -357,15 +385,20 @@ const Gameboard = () => {
 
   function receiveAttack(coords) {
     const mapData = getMapData();
-    const target = mapData.getCoordinateData(coords);
-    if (target.miss || target.hit) return;
-    if (target.ship) {
-      if (target.ship.isSunk()) return;
-      target.ship.hit();
-      target.hit = true;
-    } else {
-      target.miss = true;
+    if (mapData.space(coords).hasMissed() || mapData.space(coords).isHit())
+      return null;
+    if (mapData.space(coords).hasShip()) {
+      const shp = mapData.space(coords).ship().getShip();
+      shp.hit();
+      mapData.space(coords).setHit();
+      if (shp.isSunk()) {
+        if (mapData.allShips().sunk()) return { gameover: true };
+        return { sunk: shp.isSunk() };
+      }
+      return { hit: mapData.space(coords).isHit() };
     }
+    mapData.space(coords).setMissed();
+    return { miss: mapData.space(coords).hasMissed() };
   }
 
   return {
@@ -475,5 +508,13 @@ const Game = () => {
 const game = Game();
 tableSelf.update(game.self.gameBrd.getMapData().allShips().getAll());
 tableRival.update(game.rival.gameBrd.getMapData().allShips().getAll());
-
+tableSelf.toggleDisabled();
+tableRival.toggleAttackCursor();
+renderNotification("It is your turn, click on your Rivals board to attack");
+tableRival.addAttackEventListener((e) => {
+  const x = Number(e.target.dataset.x);
+  const y = Number(e.target.dataset.y);
+  const attack = game.rival.gameBrd.receiveAttack([x, y]);
+  console.log(attack);
+});
 export { Game, Ship };

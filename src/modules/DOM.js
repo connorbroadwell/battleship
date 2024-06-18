@@ -27,7 +27,6 @@ const Table = (tableSize, parentQuery) => {
         battlefieldCellContent.classList = "battlefield-cell-content";
         battlefieldCellContent.dataset.x = j;
         battlefieldCellContent.dataset.y = i;
-        battlefieldCellContent.textContent = `${j},${i}`;
         tableDataCell.appendChild(battlefieldCellContent);
 
         if (battlefieldCellContent.dataset.x === 0) {
@@ -58,6 +57,16 @@ const Table = (tableSize, parentQuery) => {
     label.textContent = "You";
   } else {
     label.textContent = "Rival";
+  }
+
+  function toggleDisabled() {
+    document.querySelector(parentQuery).classList.toggle("disabled");
+  }
+
+  function toggleAttackCursor() {
+    document
+      .querySelectorAll(`${parentQuery} .battlefield-cell-content`)
+      .forEach((value) => value.classList.toggle("attack-cursor"));
   }
 
   function update(ships) {
@@ -95,13 +104,28 @@ const Table = (tableSize, parentQuery) => {
     self.innerHTML = tableEl.innerHTML;
   }
 
+  function addAttackEventListener(attackEvent) {
+    document
+      .querySelectorAll(
+        `${parentQuery} .battlefield-cell-content.attack-cursor`
+      )
+      .forEach((value) => value.addEventListener("click", attackEvent));
+  }
+
   return {
     render,
     update,
     renderInvalidSpace,
     renderClassname,
+    toggleDisabled,
+    toggleAttackCursor,
+    addAttackEventListener,
   };
 };
+
+function renderNotification(msg) {
+  document.querySelector(".notification-message").textContent = msg;
+}
 
 const tableSelf = Table(10, ".battlefield-self");
 const tableRival = Table(10, ".battlefield-rival");
@@ -109,4 +133,4 @@ const tableRival = Table(10, ".battlefield-rival");
 tableSelf.render();
 tableRival.render();
 
-export { tableSelf, tableRival };
+export { tableSelf, tableRival, renderNotification };

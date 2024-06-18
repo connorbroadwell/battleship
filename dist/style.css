@@ -242,6 +242,15 @@ footer {
   justify-content: center;
 }
 
+.battlefield.disabled {
+  opacity: 0.4;
+}
+
+.battlefield-rival .battlefield-cell-content.attack-cursor:hover {
+  border: solid 3px #6366f1;
+  box-sizing: border-box;
+}
+
 .battlefield-self .ship {
   background-color: #6ee7b7;
   border: solid 1px #10b981;
