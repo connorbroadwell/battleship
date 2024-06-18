@@ -1,6 +1,6 @@
 import { tableSelf, tableRival } from "./DOM";
 
-const Ship = (size) => {
+const Ship = (size, axis) => {
   const shipSize = size;
   let timesHit = 0;
   let sunk = false;
@@ -8,6 +8,10 @@ const Ship = (size) => {
 
   function getSize() {
     return shipSize;
+  }
+
+  function getAxis() {
+    return axis;
   }
 
   function hit() {
@@ -29,7 +33,7 @@ const Ship = (size) => {
     coordinates = cords;
   }
 
-  return { getSize, isSunk, hit, getCoordinates, setCoordinates };
+  return { getSize, isSunk, hit, getCoordinates, setCoordinates, getAxis };
 };
 
 const Gameboard = () => {
@@ -120,70 +124,6 @@ const Gameboard = () => {
     return Math.abs(num1 - num2);
   }
 
-  function getInvalidCoords() {
-    const mapData = getMapData();
-    const invalidCoords = [];
-
-    function push(adjacentSpace) {
-      if (
-        invalidCoords.some(
-          (subArr) =>
-            JSON.stringify(subArr) ===
-            JSON.stringify([adjacentSpace[0], adjacentSpace[1]])
-        )
-      ) {
-        return;
-      }
-      invalidCoords.push([adjacentSpace[0], adjacentSpace[1]]);
-    }
-
-    function getHorizontal(coords) {
-      for (let j = 0; j < coords.length; j += 1) {
-        push([coords[j].x, coords[j].y + 1]);
-        push([coords[j].x, coords[j].y - 1]);
-      }
-      const start = coords[0];
-      const end = coords[coords.length - 1];
-      push([start.x - 1, start.y]);
-      push([start.x - 1, start.y + 1]);
-      push([start.x - 1, start.y - 1]);
-
-      push([end.x + 1, end.y]);
-      push([end.x + 1, end.y + 1]);
-      push([end.x + 1, end.y - 1]);
-    }
-
-    function getVertical(coords) {
-      for (let j = 0; j < coords.length; j += 1) {
-        push([coords[j].x + 1, coords[j].y]);
-        push([coords[j].x - 1, coords[j].y]);
-      }
-      const start = coords[0];
-      const end = coords[coords.length - 1];
-      push([start.x, start.y - 1]);
-      push([start.x + 1, start.y - 1]);
-      push([start.x - 1, start.y - 1]);
-
-      push([end.x, end.y + 1]);
-      push([end.x - 1, end.y + 1]);
-      push([end.x + 1, end.y + 1]);
-    }
-
-    for (let i = 0; i < mapData.map.length; i += 1) {
-      if (mapData.map[i].ship) {
-        const coords = mapData.map[i].ship.getCoordinates();
-        if (coords.length === 1) {
-          getHorizontal(coords);
-        } else if (coords[0].y + 1 === coords[1].y) {
-          getVertical(coords);
-        } else {
-          getHorizontal(coords);
-        }
-      }
-    }
-    return invalidCoords;
-  }
-
   function getValidCoords(shipSize) {
     const mapData = getMapData();
     const invalidCrds = getInvalidCoords();
@@ -206,46 +146,22 @@ const Gameboard = () => {
     const freeSpaceArr = filterUniqueElements(mapData.map, invalidArr);
     freeSpaceArr.sort((a, b) => a.x - b.x).sort((a, b) => a.y - b.y);
 
-    const verticalFreeSpaceArr = mapData.getDictionary(freeSpaceArr).columns;
+    function vertical() {
+      const verticalFreeSpaceArr = mapData.getDictionary(freeSpaceArr).columns;
+      const startingYPosArr = [];
 
-    const startingXPosArr = [];
-    const startingYPosArr = [];
-
-    function getHorizontalDiff(i, k) {
-      if (i + k >= freeSpaceArr.length) return false;
-      const diff = difference(freeSpaceArr[i].x, freeSpaceArr[i + k].x);
-      const log = {
-        shipStart: freeSpaceArr[i],
-        shipEnd: freeSpaceArr[i + k],
-        diff,
-      };
-      if (diff === shipSize - 1) return { valid: true, log };
-      return { valid: false };
-    }
-
-    function getVerticalDiff(column, j, k) {
-      if (j + k >= column.length) return false;
-      const diff = difference(column[j].y, column[j + k].y);
-      const log = {
-        shipStart: column[j],
-        shipEnd: column[j + k],
-        diff,
-      };
-      if (diff === shipSize - 1) return { valid: true, log };
-      return { valid: false };
-    }
-
-    function iterateHorizontal() {
-      for (let i = 0; i < freeSpaceArr.length; i += 1) {
-        for (let k = 0; k < shipSize; k += 1) {
-          if (getHorizontalDiff(i, k).valid) {
-            startingXPosArr.push(freeSpaceArr[i]);
-          }
-        }
+      function getVerticalDiff(column, j, k) {
+        if (j + k >= column.length) return false;
+        const diff = difference(column[j].y, column[j + k].y);
+        const log = {
+          shipStart: column[j],
+          shipEnd: column[j + k],
+          diff,
+        };
+        if (diff === shipSize - 1) return { valid: true, log };
+        return { valid: false };
       }
-    }
 
-    function iterateVertical() {
       for (let i = 0; i < verticalFreeSpaceArr.length; i += 1) {
         const column = verticalFreeSpaceArr[i];
         for (let j = 0; j < column.length; j += 1) {
@@ -256,34 +172,114 @@ const Gameboard = () => {
           }
         }
       }
+      return startingYPosArr;
     }
 
-    iterateHorizontal();
-    iterateVertical();
+    function horizontal() {
+      const startingXPosArr = [];
+      function getHorizontalDiff(i, k) {
+        if (i + k >= freeSpaceArr.length) return false;
+        const diff = difference(freeSpaceArr[i].x, freeSpaceArr[i + k].x);
+        const log = {
+          shipStart: freeSpaceArr[i],
+          shipEnd: freeSpaceArr[i + k],
+          diff,
+        };
+        if (diff === shipSize - 1) return { valid: true, log };
+        return { valid: false };
+      }
+
+      for (let i = 0; i < freeSpaceArr.length; i += 1) {
+        for (let k = 0; k < shipSize; k += 1) {
+          if (getHorizontalDiff(i, k).valid) {
+            startingXPosArr.push(freeSpaceArr[i]);
+          }
+        }
+      }
+
+      return startingXPosArr;
+    }
 
     // console.log({ startingXPosArr, startingYPosArr });
 
-    return { startingXPosArr, startingYPosArr };
+    return { vertical, horizontal };
+  }
+
+  function setOccupiedSpace(ship) {
+    const mapData = getMapData();
+    const coords = ship.getCoordinates();
+    const start = coords[0];
+    const end = coords[coords.length - 1];
+
+    const adjacentOccupiedSpaceVertical = [
+      [start.x, start.y - 1],
+      [start.x + 1, start.y - 1],
+      [start.x - 1, start.y - 1],
+
+      [end.x, end.y + 1],
+      [end.x - 1, end.y + 1],
+      [end.x + 1, end.y + 1],
+    ];
+
+    const adjacentOccupiedSpaceHorizontal = [
+      [start.x - 1, start.y],
+      [start.x - 1, start.y + 1],
+      [start.x - 1, start.y - 1],
+
+      [end.x + 1, end.y],
+      [end.x + 1, end.y + 1],
+      [end.x + 1, end.y - 1],
+    ];
+
+    if (ship.axis === "y") {
+      for (let j = 0; j < coords.length; j += 1) {
+        adjacentOccupiedSpaceVertical.push([coords[j].x + 1, coords[j].y]);
+        adjacentOccupiedSpaceVertical.push([coords[j].x - 1, coords[j].y]);
+      }
+      for (let i = 0; i < adjacentOccupiedSpaceVertical.length; i += 1) {
+        const mapLocation = mapData.getCoordinateData(
+          adjacentOccupiedSpaceVertical[i]
+        );
+        mapLocation.occupied = true;
+      }
+    } else if (ship.axis === "x") {
+      for (let j = 0; j < coords.length; j += 1) {
+        adjacentOccupiedSpaceHorizontal.push([coords[j].x, coords[j].y + 1]);
+        adjacentOccupiedSpaceHorizontal.push([coords[j].x, coords[j].y - 1]);
+      }
+      for (let i = 0; i < adjacentOccupiedSpaceHorizontal.length; i += 1) {
+        const mapLocation = mapData.getCoordinateData(
+          adjacentOccupiedSpaceHorizontal[i]
+        );
+        mapLocation.occupied = true;
+      }
+    }
   }
 
   function placeShipPart(coords, ship) {
     const mapData = getMapData();
     const mapLocation = mapData.getCoordinateData(coords);
-    if (mapLocation.ship) throw new Error("Occupied space");
+    if (mapLocation.ship) {
+      console.log({
+        mapLocation,
+        shipSize: ship.getSize(),
+        shipCord: ship.getCoordinates(),
+      });
+      throw new Error("Occupied space");
+    }
 
     mapLocation.ship = ship;
   }
 
-  function placeShip(coords, shipSize, direction) {
-    if (
-      direction !== "horizontal" &&
-      direction !== "vertical" &&
-      direction !== "x" &&
-      direction !== "y"
-    )
-      throw new Error("Ship must have a direction");
+  function placeShip(coords, shipSize, axis) {
+    if (axis !== "x" && axis !== "y")
+      throw new Error("Ship must have a valid direction");
 
-    const ship = Ship(shipSize);
+    if (axis === "x") {
+      if (shipSize + coords[0] > size) return;
+    }
+
+    const ship = Ship(shipSize, axis);
     const arrayCords = [];
     const mapData = getMapData();
     let cordData;
@@ -297,11 +293,11 @@ const Gameboard = () => {
     }
 
     for (let i = 0; i < shipSize; i += 1) {
-      if (direction === "horizontal" || direction === "x") {
+      if (axis === "x") {
         if (coords[0] + shipSize <= size) {
           cordData = [coords[0] + i, coords[1]];
         }
-      } else if (direction === "vertical" || direction === "y") {
+      } else if (axis === "y") {
         if (coords[1] + shipSize <= size) {
           cordData = [coords[0], coords[1] + i];
         }
@@ -309,14 +305,18 @@ const Gameboard = () => {
         throw new Error("Invalid placement: Ship will not fit");
       }
 
-      if (typeof cordData === "undefined" || cordData === null)
+      if (typeof cordData === "undefined" || cordData === null) {
+        console.log({ coords, axis, shipSize });
         throw new Error("Coordinates must not be null or undefined");
+      }
 
       placeShipPart(cordData, ship);
       pushCoordDataIntoShip(cordData);
+      setOccupiedSpace(ship);
     }
 
     ship.setCoordinates(arrayCords);
+    console.log({ arrayCords });
   }
 
   function receiveAttack(coords) {
@@ -341,7 +341,6 @@ const Gameboard = () => {
     getMapData,
     getValidCoords,
     getShips,
-    getInvalidCoords,
   };
 };
 
@@ -354,6 +353,10 @@ const Player = () => {
     { size: 4, howMany: 1 },
   ];
 
+  // TODO write test that multiples the size by howMany and expect with the default board size
+  // and playable ships
+  // it will equal 20
+
   return { gameBrd, playableShips };
 };
 
@@ -362,7 +365,7 @@ const Game = () => {
   const self = Player();
   const rival = Player();
 
-  function getRemainingShips(player) {
+  function getRemainingShipsToPlace(player) {
     let count = 0;
     for (let i = 0; i < player.playableShips.length; i += 1) {
       count += player.playableShips[i].howMany;
@@ -371,7 +374,7 @@ const Game = () => {
   }
 
   function random(player) {
-    while (getRemainingShips(player) > 0) {
+    while (getRemainingShipsToPlace(player) > 0) {
       const playableShips = player.playableShips.filter(
         (value) => value.howMany > 0
       );
@@ -387,30 +390,39 @@ const Game = () => {
 
       if (randAxis === 0) {
         axis = "x";
-        validStartingPositions =
-          player.gameBrd.getValidCoords(shipSize).startingXPosArr;
+        validStartingPositions = player.gameBrd
+          .getValidCoords(shipSize)
+          .horizontal();
       }
       if (randAxis === 1) {
         axis = "y";
-        validStartingPositions =
-          player.gameBrd.getValidCoords(shipSize).startingYPosArr;
+        validStartingPositions = player.gameBrd
+          .getValidCoords(shipSize)
+          .vertical();
       }
+      console.log({ validStartingPositions });
 
       const coordIndex = Math.floor(
         Math.random() * validStartingPositions.length
       );
       const target = validStartingPositions[coordIndex];
+      console.log({ validStartingPositions, coordIndex });
 
-      player.gameBrd.placeShip([target.x, target.y], shipSize, axis);
-
-      playableShips[playableShipIndex].howMany -= 1;
       const log = {
         playableShips: player.playableShips,
         target,
         axis,
         shipSize,
-        remainingShips: getRemainingShips(player),
+        remainingShips: getRemainingShipsToPlace(player),
       };
+      console.log(log);
+
+      player.gameBrd.placeShip([target.x, target.y], shipSize, axis);
+
+      playableShips[playableShipIndex].howMany -= 1;
+    }
+    if (getRemainingShipsToPlace(player) === 0) {
+      console.log("success");
     }
   }
 

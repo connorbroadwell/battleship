@@ -203,6 +203,7 @@ footer {
 .battlefield-cell-content {
   /*border: 0.5px solid #d1fae5;*/
   border: 0.5px solid black;
+  background-color: #d1fae5;
   height: 100%;
   width: 100%;
 }
@@ -243,12 +244,12 @@ footer {
 
 .battlefield-self .ship {
   background-color: #6ee7b7;
-  border: solid 1px;
+  border: solid 1px #10b981;
 }
 
 .battlefield-rival .ship {
-  background-color: black;
-  border: solid 1px;
+  background-color: #a5b4fc;
+  border: solid 1px #6366f1;
 }
 
 .battlefield-self .invalid {
