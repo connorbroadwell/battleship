@@ -84,12 +84,24 @@ const Gameboard = () => {
     }
 
     function getCoordinateByIndex(index) {
-      return map[index];
+      return map.slice()[index];
     }
 
-    function getCoordinateData(coords) {
-      const index = getIndexByCoordinate(coords);
-      return getCoordinateByIndex(index);
+    function coordinate(coord) {
+      const index = getIndexByCoordinate(coord);
+      function get() {
+        return getCoordinateByIndex(index);
+      }
+
+      function setOccupied(bool) {
+        map[index].occupied = bool;
+      }
+
+      function setShip(ship) {
+        map[index].ship = ship;
+      }
+
+      return { get, setOccupied, setShip };
     }
 
     function getFreeSpaces() {
@@ -97,7 +109,7 @@ const Gameboard = () => {
     }
 
     return {
-      getCoordinateData,
+      coordinate,
       map,
       getDictionary,
       getFreeSpaces,
