@@ -92,10 +92,15 @@ const Gameboard = () => {
       return getCoordinateByIndex(index);
     }
 
+    function getFreeSpaces() {
+      return map.filter((value) => !value.ship && !value.occupied);
+    }
+
     return {
       getCoordinateData,
       map,
       getDictionary,
+      getFreeSpaces,
     };
   }
 
@@ -126,25 +131,7 @@ const Gameboard = () => {
 
   function getValidCoords(shipSize) {
     const mapData = getMapData();
-    const invalidCrds = getInvalidCoords();
-    const spacesContainingShips = mapData.map.filter((value) => value.ship);
-    const invalidArr = spacesContainingShips.concat(invalidCrds);
-
-    function filterUniqueElements(array1, array2) {
-      return array1.filter((item1) => {
-        const x1 = item1.x !== undefined ? item1.x : item1[0];
-        const y1 = item1.y !== undefined ? item1.y : item1[1];
-
-        return !array2.some((item2) => {
-          const x2 = item2.x !== undefined ? item2.x : item2[0];
-          const y2 = item2.y !== undefined ? item2.y : item2[1];
-          return x1 === x2 && y1 === y2;
-        });
-      });
-    }
-
-    const freeSpaceArr = filterUniqueElements(mapData.map, invalidArr);
-    freeSpaceArr.sort((a, b) => a.x - b.x).sort((a, b) => a.y - b.y);
+    const freeSpaceArr = mapData.getFreeSpaces();
 
     function vertical() {
       const verticalFreeSpaceArr = mapData.getDictionary(freeSpaceArr).columns;
@@ -211,48 +198,77 @@ const Gameboard = () => {
     const start = coords[0];
     const end = coords[coords.length - 1];
 
-    const adjacentOccupiedSpaceVertical = [
-      [start.x, start.y - 1],
-      [start.x + 1, start.y - 1],
-      [start.x - 1, start.y - 1],
+    function getVertical() {
+      let adjacentOccupiedSpaceVertical = [
+        [start.x, start.y - 1],
+        [start.x + 1, start.y - 1],
+        [start.x - 1, start.y - 1],
 
-      [end.x, end.y + 1],
-      [end.x - 1, end.y + 1],
-      [end.x + 1, end.y + 1],
-    ];
+        [end.x, end.y + 1],
+        [end.x - 1, end.y + 1],
+        [end.x + 1, end.y + 1],
+      ];
 
-    const adjacentOccupiedSpaceHorizontal = [
-      [start.x - 1, start.y],
-      [start.x - 1, start.y + 1],
-      [start.x - 1, start.y - 1],
-
-      [end.x + 1, end.y],
-      [end.x + 1, end.y + 1],
-      [end.x + 1, end.y - 1],
-    ];
-
-    if (ship.axis === "y") {
       for (let j = 0; j < coords.length; j += 1) {
         adjacentOccupiedSpaceVertical.push([coords[j].x + 1, coords[j].y]);
         adjacentOccupiedSpaceVertical.push([coords[j].x - 1, coords[j].y]);
       }
+
+      adjacentOccupiedSpaceVertical = adjacentOccupiedSpaceVertical.filter(
+        (value) =>
+          !(value[0] > size - 1) &&
+          !(value[1] > size - 1) &&
+          !(value[0] < 0) &&
+          !(value[1] < 0)
+      );
+
       for (let i = 0; i < adjacentOccupiedSpaceVertical.length; i += 1) {
         const mapLocation = mapData.getCoordinateData(
           adjacentOccupiedSpaceVertical[i]
         );
         mapLocation.occupied = true;
       }
-    } else if (ship.axis === "x") {
+      return adjacentOccupiedSpaceVertical;
+    }
+
+    function getHorizontal() {
+      let adjacentOccupiedSpaceHorizontal = [
+        [start.x - 1, start.y],
+        [start.x - 1, start.y + 1],
+        [start.x - 1, start.y - 1],
+
+        [end.x + 1, end.y],
+        [end.x + 1, end.y + 1],
+        [end.x + 1, end.y - 1],
+      ];
+
       for (let j = 0; j < coords.length; j += 1) {
         adjacentOccupiedSpaceHorizontal.push([coords[j].x, coords[j].y + 1]);
         adjacentOccupiedSpaceHorizontal.push([coords[j].x, coords[j].y - 1]);
       }
+
+      adjacentOccupiedSpaceHorizontal = adjacentOccupiedSpaceHorizontal.filter(
+        (value) =>
+          !(value[0] > size - 1) &&
+          !(value[1] > size - 1) &&
+          !(value[0] < 0) &&
+          !(value[1] < 0)
+      );
+
       for (let i = 0; i < adjacentOccupiedSpaceHorizontal.length; i += 1) {
         const mapLocation = mapData.getCoordinateData(
           adjacentOccupiedSpaceHorizontal[i]
         );
         mapLocation.occupied = true;
       }
+      return adjacentOccupiedSpaceHorizontal;
+    }
+
+    if (ship.getAxis() === "x") {
+      return getHorizontal();
+    }
+    if (ship.getAxis() === "y") {
+      return getVertical();
     }
   }
 
@@ -260,12 +276,8 @@ const Gameboard = () => {
     const mapData = getMapData();
     const mapLocation = mapData.getCoordinateData(coords);
     if (mapLocation.ship) {
-      console.log({
-        mapLocation,
-        shipSize: ship.getSize(),
-        shipCord: ship.getCoordinates(),
-      });
-      throw new Error("Occupied space");
+      console.log("dupe");
+      return;
     }
 
     mapLocation.ship = ship;
@@ -274,12 +286,15 @@ const Gameboard = () => {
   function placeShip(coords, shipSize, axis) {
     if (axis !== "x" && axis !== "y")
       throw new Error("Ship must have a valid direction");
-
     if (axis === "x") {
       if (shipSize + coords[0] > size) return;
     }
+    if (axis === "y") {
+      if (shipSize + coords[1] > size) return;
+    }
 
     const ship = Ship(shipSize, axis);
+
     const arrayCords = [];
     const mapData = getMapData();
     let cordData;
@@ -312,11 +327,10 @@ const Gameboard = () => {
 
       placeShipPart(cordData, ship);
       pushCoordDataIntoShip(cordData);
-      setOccupiedSpace(ship);
     }
 
     ship.setCoordinates(arrayCords);
-    console.log({ arrayCords });
+    setOccupiedSpace(ship);
   }
 
   function receiveAttack(coords) {
@@ -400,13 +414,11 @@ const Game = () => {
           .getValidCoords(shipSize)
           .vertical();
       }
-      console.log({ validStartingPositions });
 
       const coordIndex = Math.floor(
         Math.random() * validStartingPositions.length
       );
       const target = validStartingPositions[coordIndex];
-      console.log({ validStartingPositions, coordIndex });
 
       const log = {
         playableShips: player.playableShips,
@@ -415,7 +427,6 @@ const Game = () => {
         shipSize,
         remainingShips: getRemainingShipsToPlace(player),
       };
-      console.log(log);
 
       player.gameBrd.placeShip([target.x, target.y], shipSize, axis);
 
@@ -427,7 +438,6 @@ const Game = () => {
   }
 
   random(self);
-  random(rival);
 
   function getPlayableShips() {
     const total = playableShips.reduce(
