@@ -152,13 +152,24 @@ const Table = (tableSize, parentQuery) => {
 };
 
 function renderNotification(msg) {
-  document.querySelector(".notification-message").textContent = msg;
+  document.querySelector(".notification-message").innerHTML = msg;
 }
 
-const tableSelf = Table(10, ".battlefield-self");
-const tableRival = Table(10, ".battlefield-rival");
+function renderVictoryScreen(championName, championId) {
+  document.querySelector(".battlefields").remove();
+  document.querySelector(".notification-wrap").remove();
 
-tableSelf.render();
-tableRival.render();
+  const victoryScreen = document.createElement("div");
+  victoryScreen.classList.add("game-over");
 
-export { tableSelf, tableRival, renderNotification };
+  victoryScreen.innerHTML = `
+    <div class="game-over-message-container">
+      <div class="game-over-message">
+        <div class="game-over-text">Game Over</div>
+        <div class="congrats"><span class="${championId}-victory">${championName}</span> Wins!</div>
+    </div>
+  `;
+  document.querySelector("main").appendChild(victoryScreen);
+}
+
+export { Table, renderNotification, renderVictoryScreen };
