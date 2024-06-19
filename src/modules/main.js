@@ -1,5 +1,14 @@
 import { Game } from "./battleship";
-import { renderNotification, renderVictoryScreen } from "./DOM";
+import {
+  getBodyInnerHTML,
+  renderNotification,
+  renderPassScreen,
+  renderVictoryScreen,
+  setBodyInnerHTML,
+  Table,
+} from "./DOM";
+
+const initHTML = getBodyInnerHTML();
 
 const game = Game();
 
@@ -9,6 +18,19 @@ const { rival } = game;
 function gameLoop() {
   const { currentTurn } = game.getTurn();
   const { nextTurn } = game.getTurn();
+  const turn = {
+    currentName: currentTurn.getName(),
+    currentId: currentTurn.getId(),
+    nextName: nextTurn.getName(),
+    nextId: nextTurn.getId(),
+  };
+
+  const selfArgs = self.table.args;
+  self.table = Table(selfArgs.tableSize, selfArgs.parentQuery);
+
+  const rivalArgs = rival.table.args;
+  rival.table = Table(rivalArgs.tableSize, rivalArgs.parentQuery);
+
   self.table.render();
   rival.table.render();
 
@@ -39,10 +61,18 @@ function gameLoop() {
     } else {
       return;
     }
-    nextTurn.setTurn(true);
-    currentTurn.setTurn(false);
-    currentTurn.table.toggleDisabled();
-    gameLoop();
+    renderPassScreen(
+      turn.currentName,
+      turn.currentId,
+      turn.nextName,
+      turn.nextId
+    );
+    document.querySelector(".pass-btn").addEventListener("click", (e) => {
+      nextTurn.setTurn(true);
+      currentTurn.setTurn(false);
+      setBodyInnerHTML(initHTML);
+      gameLoop();
+    });
   });
 }
 
