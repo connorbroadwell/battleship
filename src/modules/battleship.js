@@ -164,6 +164,10 @@ const Gameboard = () => {
       };
     }
 
+    function getMap() {
+      return map.slice();
+    }
+
     function getFreeSpaces() {
       return map.slice().filter((value) => !value.ship && !value.occupied);
     }
@@ -184,6 +188,7 @@ const Gameboard = () => {
       getDictionary,
       getFreeSpaces,
       allShips,
+      getMap,
     };
   }
 

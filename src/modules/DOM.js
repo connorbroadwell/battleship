@@ -1,5 +1,6 @@
 const Table = (tableSize, parentQuery) => {
   const self = document.querySelector(`${parentQuery} .battlefield-table`);
+  let xray = false;
 
   function getNewTableElement() {
     function getColMarker(datasetYPos) {
@@ -66,16 +67,60 @@ const Table = (tableSize, parentQuery) => {
   function toggleAttackCursor() {
     document
       .querySelectorAll(`${parentQuery} .battlefield-cell-content`)
-      .forEach((value) => value.classList.toggle("attack-cursor"));
+      .forEach((value) =>
+        value.classList.contains("miss") || value.classList.contains("hit")
+          ? null
+          : value.classList.toggle("attack-cursor")
+      );
   }
 
-  function update(ships) {
-    const arr = ships;
-    for (let i = 0; i < arr.length; i += 1) {
+  function renderSunk(cell) {
+    cell.classList.add("sunk");
+  }
+
+  function xrayEnabled() {
+    return xray;
+  }
+
+  function toggleXray() {
+    // eslint-disable-next-line no-unused-expressions
+    xray ? (xray = false) : (xray = true);
+  }
+
+  function renderMiss(cell) {
+    cell.classList.add("miss");
+    const missIcon = document.createElement("span");
+    missIcon.classList = "miss-icon";
+    cell.appendChild(missIcon);
+  }
+
+  function renderHit(cell) {
+    cell.classList.add("hit");
+    const hitIcon = document.createElement("span");
+    hitIcon.classList = "hit-icon";
+    cell.appendChild(hitIcon);
+  }
+
+  function renderShip(cell) {
+    cell.classList.add("ship");
+  }
+
+  function update(player) {
+    const { gameBrd } = player;
+    const map = gameBrd.getMapData().getMap();
+    for (let i = 0; i < map.length; i += 1) {
       const shipCell = document.querySelector(
-        `${parentQuery} .battlefield-cell-content[data-x="${arr[i].x}"][data-y="${arr[i].y}"]`
+        `${parentQuery} .battlefield-cell-content[data-x="${map[i].x}"][data-y="${map[i].y}"]`
       );
-      shipCell.classList.add("ship");
+      const mapSpace = gameBrd.getMapData().space([map[i].x, map[i].y]);
+      if (mapSpace.hasShip()) {
+        if (xrayEnabled() || player.getTurn()) {
+          renderShip(shipCell);
+        }
+        if (mapSpace.ship().getShip().isSunk()) renderSunk(shipCell);
+      }
+      if (mapSpace.hasMissed()) renderMiss(shipCell);
+      if (mapSpace.isHit()) renderHit(shipCell);
     }
   }
 
@@ -117,16 +162,10 @@ const Table = (tableSize, parentQuery) => {
       `${parentQuery} .battlefield-cell-content.attack-cursor[data-x="${coords[0]}"][data-y="${coords[1]}"]`
     );
     if (attack.miss) {
-      cell.classList.replace("attack-cursor", "miss");
-      const missIcon = document.createElement("span");
-      missIcon.classList = "miss-icon";
-      cell.appendChild(missIcon);
+      renderMiss(cell);
     }
     if (attack.hit || attack.sunk) {
-      cell.classList.replace("attack-cursor", "hit");
-      const hitIcon = document.createElement("span");
-      hitIcon.classList = "hit-icon";
-      cell.appendChild(hitIcon);
+      renderHit(cell);
     }
     if (attack.sunk) {
       attack.shipCords.forEach((value) => {
@@ -155,7 +194,7 @@ function renderNotification(msg) {
   document.querySelector(".notification-message").innerHTML = msg;
 }
 
-function renderVictoryScreen(championName, championId) {
+function renderVictoryScreen(championName, championId, loserId) {
   document.querySelector(".battlefields").remove();
   document.querySelector(".notification-wrap").remove();
 
@@ -166,7 +205,7 @@ function renderVictoryScreen(championName, championId) {
     <div class="game-over-message-container">
       <div class="game-over-message">
         <div class="game-over-text">Game Over</div>
-        <div class="congrats"><span class="${championId}-victory">${championName}</span> Wins!</div>
+        <div class="congrats"><span class="${championId}-victory">${championName}</span> <span class="${loserId}-victory">Wins!</div>
     </div>
   `;
   document.querySelector("main").appendChild(victoryScreen);
