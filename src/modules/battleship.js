@@ -1,4 +1,4 @@
-import { tableSelf, tableRival } from "./DOM";
+import { Table, renderNotification } from "./DOM";
 import { logArrays, difference } from "./utility";
 const { stripIndents } = require("common-tags");
 
@@ -100,6 +100,24 @@ const Gameboard = () => {
         return false;
       }
 
+      function isHit() {
+        if (map.slice()[index].hit) return true;
+        return false;
+      }
+
+      function setHit() {
+        map[index].hit = true;
+      }
+
+      function hasMissed() {
+        if (map.slice()[index].miss) return true;
+        return false;
+      }
+
+      function setMissed() {
+        map[index].miss = true;
+      }
+
       function setOccupied(bool) {
         map[index].occupied = bool;
       }
@@ -133,7 +151,21 @@ const Gameboard = () => {
         return { getShip, getLog };
       }
 
-      return { get, setOccupied, setShip, hasShip, ship };
+      return {
+        get,
+        setOccupied,
+        setShip,
+        hasShip,
+        ship,
+        isHit,
+        setHit,
+        hasMissed,
+        setMissed,
+      };
+    }
+
+    function getMap() {
+      return map.slice();
     }
 
     function getFreeSpaces() {
@@ -156,6 +188,7 @@ const Gameboard = () => {
       getDictionary,
       getFreeSpaces,
       allShips,
+      getMap,
     };
   }
 
@@ -357,15 +390,25 @@ const Gameboard = () => {
 
   function receiveAttack(coords) {
     const mapData = getMapData();
-    const target = mapData.getCoordinateData(coords);
-    if (target.miss || target.hit) return;
-    if (target.ship) {
-      if (target.ship.isSunk()) return;
-      target.ship.hit();
-      target.hit = true;
-    } else {
-      target.miss = true;
+    if (mapData.space(coords).hasMissed() || mapData.space(coords).isHit())
+      return null;
+    if (mapData.space(coords).hasShip()) {
+      const shp = mapData.space(coords).ship().getShip();
+      shp.hit();
+      mapData.space(coords).setHit();
+      if (shp.isSunk() && !mapData.allShips().sunk()) {
+        return { sunk: shp.isSunk(), shipCords: shp.getCoordinates() };
+      }
+      if (mapData.allShips().sunk())
+        return {
+          sunk: shp.isSunk(),
+          gameover: true,
+          shipCords: shp.getCoordinates(),
+        };
+      return { hit: mapData.space(coords).isHit() };
     }
+    mapData.space(coords).setMissed();
+    return { miss: mapData.space(coords).hasMissed() };
   }
 
   return {
@@ -378,7 +421,7 @@ const Gameboard = () => {
   };
 };
 
-const Player = () => {
+const Player = (name, tableQuerySelector) => {
   const gameBrd = Gameboard();
   const playableShips = [
     { size: 1, howMany: 4 },
@@ -386,18 +429,69 @@ const Player = () => {
     { size: 3, howMany: 2 },
     { size: 4, howMany: 1 },
   ];
+  const table = Table(10, tableQuerySelector);
+  let turn = false;
+  let id;
+
+  function setTurn(bool) {
+    turn = bool;
+  }
+
+  function getTurn() {
+    return turn;
+  }
+
+  function getName() {
+    return name;
+  }
+
+  function setId(str) {
+    id = str;
+  }
+
+  function getId() {
+    return id;
+  }
 
   // TODO write test that multiples the size by howMany and expect with the default board size
   // and playable ships
   // it will equal 20
 
-  return { gameBrd, playableShips };
+  return {
+    gameBrd,
+    playableShips,
+    table,
+    setTurn,
+    getTurn,
+    getName,
+    setId,
+    getId,
+  };
 };
 
 // by default the game will have 10 ships on a grid with a size of 10
 const Game = () => {
-  const self = Player();
-  const rival = Player();
+  const self = Player("You", ".battlefield-self");
+  const rival = Player("Rival", ".battlefield-rival");
+  const players = [self, rival];
+
+  self.setId("self");
+  self.setTurn(true);
+
+  rival.setId("rival");
+
+  function getTurn() {
+    let currentTurn;
+    let nextTurn;
+    players.forEach((player) => {
+      if (player.getTurn()) {
+        currentTurn = player;
+      } else {
+        nextTurn = player;
+      }
+    });
+    return { currentTurn, nextTurn };
+  }
 
   function getRemainingShipsToPlace(player) {
     let count = 0;
@@ -442,7 +536,9 @@ const Game = () => {
       const getTarget = () => validStartingPositions[coordIndex];
 
       let target = getTarget();
-      if (target === undefined) target = getTarget();
+      while (target === undefined || target === null) {
+        target = getTarget();
+      }
 
       const log = {
         playableShips: player.playableShips,
@@ -467,11 +563,7 @@ const Game = () => {
   random(self);
   random(rival);
 
-  return { self, rival };
+  return { self, rival, getTurn };
 };
-
-const game = Game();
-tableSelf.update(game.self.gameBrd.getMapData().allShips().getAll());
-tableRival.update(game.rival.gameBrd.getMapData().allShips().getAll());
 
 export { Game, Ship };

@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Tiny5&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
@@ -138,10 +140,32 @@ table {
   font-family: "Poppins", sans-serif;
   font-weight: 400;
   font-style: normal;
+  --emerald-100: #d1fae5;
+  --emerald-500: #10b981;
+  --indigo-300: #a5b4fc;
+  --indigo-100: #e0e7ff;
+  --indigo-500: #6366f1;
+  --zinc-800: #27272a;
+  --zinc-600: #52525b;
+  --emerald-600: #059669;
+  --emerald-400: #34d399;
+  --emerald-300: #6ee7b7;
 }
 
 body {
   overflow: hidden;
+  background-color: var(--zinc-800);
+}
+
+.heart {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  padding-left: 5px;
+  opacity: 0.03;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
 }
 
 .body-wrap {
@@ -201,11 +225,67 @@ footer {
 }
 
 .battlefield-cell-content {
-  /*border: 0.5px solid #d1fae5;*/
   border: 0.5px solid black;
-  background-color: #d1fae5;
+  background-color: var(--zinc-600);
   height: 100%;
   width: 100%;
+  overflow: hidden;
+}
+
+/* self */
+
+.disabled #battlefield-table-self .battlefield-cell-content {
+  background-color: var(--emerald-600);
+}
+
+.battlefield-self .battlefield-cell-content {
+  background-color: var(--emerald-600);
+}
+
+#battlefield-table-self .battlefield-cell-content.attack-cursor:hover {
+  border: solid 3px var(--emerald-500);
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+div#battlefield-table-self .battlefield-cell-content.ship {
+  background-color: var(--emerald-300);
+  border: solid 1px var(--emerald-500);
+  box-sizing: border-box;
+}
+
+div#battlefield-table-self .battlefield-cell-content.sunk.hit {
+  border: solid 3px var(--emerald-500);
+}
+
+div#battlefield-table-self .battlefield-cell-content.hit {
+  border: solid 1px var(--emerald-500);
+  background-color: var(--emerald-300);
+  box-sizing: border-box;
+}
+
+/* rival */
+
+#battlefield-table-rival .battlefield-cell-content.attack-cursor:hover {
+  border: solid 3px var(--indigo-500);
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+div#battlefield-table-rival .battlefield-cell-content.ship {
+  background-color: var(--indigo-300);
+  border: solid 1px var(--indigo-500);
+  box-sizing: border-box;
+}
+
+div#battlefield-table-rival .battlefield-cell-content.sunk.hit {
+  border: solid 3px var(--indigo-500);
+}
+
+div#battlefield-table-rival .battlefield-cell-content.hit {
+  border: solid 1px var(--indigo-500);
+  background-color: var(--indigo-300);
+  box-sizing: border-box;
 }
 
 .battlefield-self-label,
@@ -242,14 +322,72 @@ footer {
   justify-content: center;
 }
 
-.battlefield-self .ship {
-  background-color: #6ee7b7;
-  border: solid 1px #10b981;
+.battlefield.disabled {
+  opacity: 0.4;
 }
 
-.battlefield-rival .ship {
-  background-color: #a5b4fc;
-  border: solid 1px #6366f1;
+.miss-icon {
+  display: block;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  height: 4px;
+  width: 4px;
+  background: #333;
+  border-radius: 50%;
+  margin-top: -2px;
+  margin-left: -2px;
+}
+
+.hit {
+  position: relative;
+}
+
+.hit-icon {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.hit-icon::after {
+  top: 50%;
+  height: 2px;
+  left: -25%;
+  width: 150%;
+  margin-left: -1px;
+}
+
+.hit-icon::before {
+  left: 50%;
+  width: 2px;
+  top: -25%;
+  height: 150%;
+  margin-top: 1px;
+}
+
+.battlefield-rival .hit-icon::before,
+.battlefield-rival .hit-icon::after {
+  background: var(--indigo-500);
+}
+
+.battlefield-self .hit-icon::before,
+.battlefield-self .hit-icon::after {
+  background: var(--emerald-500);
+}
+
+.battlefield-self .hit-icon::before,
+.battlefield-rival .hit-icon::before,
+.battlefield-self .hit-icon::after,
+.battlefield-rival .hit-icon::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  transform: rotate(-45deg);
 }
 
 .battlefield-self .invalid {
@@ -262,6 +400,30 @@ footer {
 
 .battlefield-self .y-starting {
   background-color: orangered;
+}
+
+.game-over {
+  margin: auto;
+}
+
+.game-over-message {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+  align-items: center;
+}
+
+.game-over-text {
+  font-size: 3rem;
+  color: #f43f5e;
+}
+
+.self-victory {
+  color: var(--emerald-500);
+}
+
+.rival-victory {
+  color: var(--indigo-500);
 }
 
 @media only screen and (min-width: 730px) {

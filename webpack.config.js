@@ -6,6 +6,7 @@ module.exports = {
     "./src/modules/DOM.js",
     "./src/modules/battleship.js",
     "./src/modules/utility.js",
+    "./src/modules/main.js",
   ],
   devServer: {
     static: {
