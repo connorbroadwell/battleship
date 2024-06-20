@@ -18,6 +18,10 @@ const { rival } = game;
 function gameLoop(aiEnabled = false) {
   let { currentTurn } = game.getTurn();
   let { nextTurn } = game.getTurn();
+  if (aiEnabled) {
+    currentTurn = self;
+    nextTurn = rival;
+  }
 
   const selfArgs = self.table.args;
   self.table = Table(selfArgs.tableSize, selfArgs.parentQuery);
@@ -55,18 +59,21 @@ function gameLoop(aiEnabled = false) {
     } else {
       return;
     }
-    renderPassScreen(
-      currentTurn.getName(),
-      currentTurn.getId(),
-      nextTurn.getName(),
-      nextTurn.getId()
-    );
-    document.querySelector(".pass-btn").addEventListener("click", (e) => {
-      nextTurn.setTurn(true);
-      currentTurn.setTurn(false);
-      setBodyInnerHTML(initHTML);
-      gameLoop(aiEnabled);
-    });
+    if (!aiEnabled) {
+      renderPassScreen(
+        currentTurn.getName(),
+        currentTurn.getId(),
+        nextTurn.getName(),
+        nextTurn.getId()
+      );
+
+      document.querySelector(".pass-btn").addEventListener("click", (e) => {
+        nextTurn.setTurn(true);
+        currentTurn.setTurn(false);
+        setBodyInnerHTML(initHTML);
+        gameLoop(aiEnabled);
+      });
+    }
   });
 }
 
