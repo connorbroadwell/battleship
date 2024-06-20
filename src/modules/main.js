@@ -15,15 +15,9 @@ const game = Game();
 const { self } = game;
 const { rival } = game;
 
-function gameLoop() {
-  const { currentTurn } = game.getTurn();
-  const { nextTurn } = game.getTurn();
-  const turn = {
-    currentName: currentTurn.getName(),
-    currentId: currentTurn.getId(),
-    nextName: nextTurn.getName(),
-    nextId: nextTurn.getId(),
-  };
+function gameLoop(aiEnabled = false) {
+  let { currentTurn } = game.getTurn();
+  let { nextTurn } = game.getTurn();
 
   const selfArgs = self.table.args;
   self.table = Table(selfArgs.tableSize, selfArgs.parentQuery);
@@ -62,16 +56,16 @@ function gameLoop() {
       return;
     }
     renderPassScreen(
-      turn.currentName,
-      turn.currentId,
-      turn.nextName,
-      turn.nextId
+      currentTurn.getName(),
+      currentTurn.getId(),
+      nextTurn.getName(),
+      nextTurn.getId()
     );
     document.querySelector(".pass-btn").addEventListener("click", (e) => {
       nextTurn.setTurn(true);
       currentTurn.setTurn(false);
       setBodyInnerHTML(initHTML);
-      gameLoop();
+      gameLoop(aiEnabled);
     });
   });
 }
