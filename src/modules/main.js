@@ -15,7 +15,7 @@ const game = Game();
 const { self } = game;
 const { rival } = game;
 
-function gameLoop(aiEnabled = false) {
+function gameLoop({ aiEnabled = false }) {
   let { currentTurn } = game.getTurn();
   let { nextTurn } = game.getTurn();
   if (aiEnabled) {
@@ -73,8 +73,9 @@ function gameLoop(aiEnabled = false) {
         setBodyInnerHTML(initHTML);
         gameLoop(aiEnabled);
       });
+    } else {
     }
   });
 }
 
-gameLoop();
+gameLoop({ aiEnabled: true });
