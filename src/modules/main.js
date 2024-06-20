@@ -1,14 +1,34 @@
 import { Game } from "./battleship";
-import { renderNotification, renderVictoryScreen } from "./DOM";
+import {
+  getBodyInnerHTML,
+  renderNotification,
+  renderPassScreen,
+  renderVictoryScreen,
+  setBodyInnerHTML,
+  Table,
+} from "./DOM";
+
+const initHTML = getBodyInnerHTML();
 
 const game = Game();
 
 const { self } = game;
 const { rival } = game;
 
-function gameLoop() {
-  const { currentTurn } = game.getTurn();
-  const { nextTurn } = game.getTurn();
+function gameLoop({ aiEnabled = false }) {
+  let { currentTurn } = game.getTurn();
+  let { nextTurn } = game.getTurn();
+  if (aiEnabled) {
+    currentTurn = self;
+    nextTurn = rival;
+  }
+
+  const selfArgs = self.table.args;
+  self.table = Table(selfArgs.tableSize, selfArgs.parentQuery);
+
+  const rivalArgs = rival.table.args;
+  rival.table = Table(rivalArgs.tableSize, rivalArgs.parentQuery);
+
   self.table.render();
   rival.table.render();
 
@@ -37,13 +57,47 @@ function gameLoop() {
           nextTurn.getId()
         );
     } else {
-      return;
+      return null;
     }
-    nextTurn.setTurn(true);
-    currentTurn.setTurn(false);
-    currentTurn.table.toggleDisabled();
-    gameLoop();
+    if (!aiEnabled) {
+      renderPassScreen(
+        currentTurn.getName(),
+        currentTurn.getId(),
+        nextTurn.getName(),
+        nextTurn.getId()
+      );
+
+      document.querySelector(".pass-btn").addEventListener("click", (e) => {
+        nextTurn.setTurn(true);
+        currentTurn.setTurn(false);
+        setBodyInnerHTML(initHTML);
+        gameLoop(aiEnabled);
+      });
+    } else {
+      const attackableCoordinate = self.gameBrd
+        .getMapData()
+        .getRandomAttackableCoordinate();
+      const aiAttack = self.gameBrd.receiveAttack([
+        attackableCoordinate.x,
+        attackableCoordinate.y,
+      ]);
+      console.log({ aiAttack });
+      if (aiAttack !== null) {
+        self.table.renderAttackResult(aiAttack, [
+          attackableCoordinate.x,
+          attackableCoordinate.y,
+        ]);
+        if (aiAttack.gameover)
+          return renderVictoryScreen(
+            rival.getName(),
+            rival.getId(),
+            self.getId()
+          );
+      } else {
+        return null;
+      }
+    }
   });
 }
 
-gameLoop();
+gameLoop({ aiEnabled: true });

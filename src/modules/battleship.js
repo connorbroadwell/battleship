@@ -89,6 +89,12 @@ const Gameboard = () => {
       return map.slice()[index];
     }
 
+    function getRandomAttackableCoordinate() {
+      const filteredMap = map.filter((value) => !value.hit && !value.miss);
+      const index = Math.floor(Math.random() * filteredMap.length);
+      return filteredMap[index];
+    }
+
     function space(coord) {
       const index = getIndexByCoordinate(coord);
       function get() {
@@ -189,6 +195,7 @@ const Gameboard = () => {
       getFreeSpaces,
       allShips,
       getMap,
+      getRandomAttackableCoordinate,
     };
   }
 

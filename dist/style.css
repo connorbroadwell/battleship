@@ -150,11 +150,13 @@ table {
   --emerald-600: #059669;
   --emerald-400: #34d399;
   --emerald-300: #6ee7b7;
+  --zinc-700: #3f3f46;
 }
 
 body {
   overflow: hidden;
   background-color: var(--zinc-800);
+  color: white;
 }
 
 .heart {
@@ -188,6 +190,7 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 footer {
@@ -331,12 +334,12 @@ div#battlefield-table-rival .battlefield-cell-content.hit {
   position: relative;
   top: 50%;
   left: 50%;
-  height: 4px;
-  width: 4px;
-  background: #333;
+  height: 6px;
+  width: 6px;
+  background: #fafafa;
   border-radius: 50%;
-  margin-top: -2px;
-  margin-left: -2px;
+  margin-top: -4px;
+  margin-left: -4px;
 }
 
 .hit {
@@ -424,6 +427,64 @@ div#battlefield-table-rival .battlefield-cell-content.hit {
 
 .rival-victory {
   color: var(--indigo-500);
+}
+
+.self-victory-bg {
+  background-color: var(--emerald-500);
+}
+
+.rival-victory-bg {
+  background-color: var(--indigo-500);
+}
+
+.pass-btn {
+  justify-self: center;
+  width: 50%;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: 0;
+  border-radius: 0.3rem;
+}
+
+.pass-btn:active {
+  transform: scale(0.98);
+}
+
+.pass-btn-container {
+  display: flex;
+  justify-content: center;
+}
+
+.pass-screen {
+  display: flex;
+  flex-direction: column;
+  border-radius: 1.5rem;
+  height: 100%;
+  padding-top: 8rem;
+  align-items: center;
+}
+
+.pass-screen-message {
+  display: grid;
+  border-radius: 1.5rem;
+  background-color: var(--zinc-700);
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+  width: 70%;
+}
+
+.pass-screen-message-text {
+  font-size: 1.5rem;
+}
+
+.pass-screen-message-text.head {
+}
+
+.pass-screen-message-text.body {
 }
 
 @media only screen and (min-width: 730px) {

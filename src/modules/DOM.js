@@ -1,4 +1,5 @@
 const Table = (tableSize, parentQuery) => {
+  const args = { tableSize, parentQuery };
   const self = document.querySelector(`${parentQuery} .battlefield-table`);
   let xray = false;
 
@@ -159,7 +160,7 @@ const Table = (tableSize, parentQuery) => {
 
   function renderAttackResult(attack, coords) {
     const cell = document.querySelector(
-      `${parentQuery} .battlefield-cell-content.attack-cursor[data-x="${coords[0]}"][data-y="${coords[1]}"]`
+      `${parentQuery} .battlefield-cell-content[data-x="${coords[0]}"][data-y="${coords[1]}"]`
     );
     if (attack.miss) {
       renderMiss(cell);
@@ -187,6 +188,7 @@ const Table = (tableSize, parentQuery) => {
     toggleAttackCursor,
     addAttackEventListener,
     renderAttackResult,
+    args,
   };
 };
 
@@ -211,4 +213,50 @@ function renderVictoryScreen(championName, championId, loserId) {
   document.querySelector("main").appendChild(victoryScreen);
 }
 
-export { Table, renderNotification, renderVictoryScreen };
+function getPlayerColorSpan(id, insertedText) {
+  return `<span class="${id}-victory">${insertedText}</span>`;
+}
+
+function renderPassScreen(curName, curId, nextName, nextId) {
+  document.querySelector(".battlefields").remove();
+  document.querySelector(".notification-wrap").remove();
+
+  const passScreen = document.createElement("div");
+  passScreen.classList.add("pass-screen");
+
+  passScreen.innerHTML = `
+      <div class="pass-screen-message">
+        <div class="pass-screen-message-text head">${getPlayerColorSpan(
+          curId,
+          curName
+        )}, Pass your screen to your opponent ${getPlayerColorSpan(
+    nextId,
+    nextName
+  )}</div>
+        <div class="pass-screen-message-text body">It is your turn, ${getPlayerColorSpan(
+          nextId,
+          nextName
+        )}. Are you ready?</div>
+        <div class="pass-btn-container">
+          <button type="button" class="pass-btn ${nextId}-victory-bg">Ready</button>
+        </div>
+  `;
+  document.querySelector("main").appendChild(passScreen);
+}
+
+function getBodyInnerHTML() {
+  return document.querySelector("body").innerHTML;
+}
+
+function setBodyInnerHTML(innerHTML) {
+  document.querySelector("body").innerHTML = innerHTML;
+}
+
+export {
+  Table,
+  renderNotification,
+  renderVictoryScreen,
+  renderPassScreen,
+  getBodyInnerHTML,
+  setBodyInnerHTML,
+};
