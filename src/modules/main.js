@@ -1,4 +1,4 @@
-import { Game, Gameboard } from "./battleship";
+import { Game } from "./battleship";
 import {
   getBodyInnerHTML,
   renderNotification,
