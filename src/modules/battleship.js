@@ -89,6 +89,15 @@ const Gameboard = () => {
       return map.slice()[index];
     }
 
+    //             |
+    // attackable! V
+
+    function getRandomAttackableCoordinate() {
+      const filteredMap = map.filter((value) => !value.hit && !value.miss);
+      const index = Math.floor(Math.random() * map.length);
+      return map.slice()[index];
+    }
+
     function space(coord) {
       const index = getIndexByCoordinate(coord);
       function get() {
