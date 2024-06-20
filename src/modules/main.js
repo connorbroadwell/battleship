@@ -1,4 +1,4 @@
-import { Game } from "./battleship";
+import { Game, Gameboard } from "./battleship";
 import {
   getBodyInnerHTML,
   renderNotification,
@@ -57,7 +57,7 @@ function gameLoop({ aiEnabled = false }) {
           nextTurn.getId()
         );
     } else {
-      return;
+      return null;
     }
     if (!aiEnabled) {
       renderPassScreen(
@@ -74,6 +74,28 @@ function gameLoop({ aiEnabled = false }) {
         gameLoop(aiEnabled);
       });
     } else {
+      const attackableCoordinate = self.gameBrd
+        .getMapData()
+        .getRandomAttackableCoordinate();
+      const aiAttack = self.gameBrd.receiveAttack([
+        attackableCoordinate.x,
+        attackableCoordinate.y,
+      ]);
+      console.log({ aiAttack });
+      if (aiAttack !== null) {
+        self.table.renderAttackResult(aiAttack, [
+          attackableCoordinate.x,
+          attackableCoordinate.y,
+        ]);
+        if (aiAttack.gameover)
+          return renderVictoryScreen(
+            rival.getName(),
+            rival.getId(),
+            self.getId()
+          );
+      } else {
+        return null;
+      }
     }
   });
 }

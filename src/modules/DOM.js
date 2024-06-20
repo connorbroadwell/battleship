@@ -160,7 +160,7 @@ const Table = (tableSize, parentQuery) => {
 
   function renderAttackResult(attack, coords) {
     const cell = document.querySelector(
-      `${parentQuery} .battlefield-cell-content.attack-cursor[data-x="${coords[0]}"][data-y="${coords[1]}"]`
+      `${parentQuery} .battlefield-cell-content[data-x="${coords[0]}"][data-y="${coords[1]}"]`
     );
     if (attack.miss) {
       renderMiss(cell);
