@@ -100,4 +100,4 @@ function gameLoop({ aiEnabled = false }) {
   });
 }
 
-gameLoop({ aiEnabled: true });
+gameLoop({ aiEnabled: false });
