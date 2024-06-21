@@ -252,6 +252,42 @@ function setBodyInnerHTML(innerHTML) {
   document.querySelector("body").innerHTML = innerHTML;
 }
 
+function renderGameStart() {
+  const startingHTML = `
+    <div class="body-wrap">
+      <header class="flex-col">
+        <div class="title-wrap">
+          <div class="title">
+            <span class="self-victory">Jellyship</span>
+            <span class="rival-victory">Battle</span>
+          </div>
+        </div>
+        <div class="notification-wrap">
+          <div class="notification">
+            <div class="notification-message">Place your/yalls ships</div>
+          </div>
+        </div>
+      </header>
+      <main>
+        <div class="battlefields">
+          <div class="battlefield-self-label self-victory"></div>
+          <div class="battlefield battlefield-self">
+            <div id="battlefield-table-self" class="battlefield-table"></div>
+          </div>
+          <div class="battlefield battlefield-rival">
+            <div id="battlefield-table-rival" class="battlefield-table"></div>
+          </div>
+          <div class="battlefield-rival-label rival-victory"></div>
+        </div>
+      </main>
+      <footer>
+        © now-forever snowjellyIndustries <span class="heart"><3</span>
+      </footer>
+    </div>
+  `;
+  return startingHTML;
+}
+
 export {
   Table,
   renderNotification,
@@ -259,4 +295,5 @@ export {
   renderPassScreen,
   getBodyInnerHTML,
   setBodyInnerHTML,
+  renderGameStart,
 };

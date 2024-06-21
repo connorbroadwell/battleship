@@ -6,8 +6,10 @@ import {
   renderVictoryScreen,
   setBodyInnerHTML,
   Table,
+  renderGameStart,
 } from "./DOM";
 
+setBodyInnerHTML(renderGameStart());
 const initHTML = getBodyInnerHTML();
 
 const game = Game();
