@@ -9,7 +9,7 @@ import {
   renderGameStart,
 } from "./DOM";
 
-setBodyInnerHTML(renderGameStart());
+// setBodyInnerHTML(renderGameStart());
 const initHTML = getBodyInnerHTML();
 
 const game = Game();
