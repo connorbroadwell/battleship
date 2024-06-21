@@ -7,10 +7,9 @@ import {
   setBodyInnerHTML,
   Table,
   renderGameStart,
+  addGameInitBtnEventListener,
+  renderPlayerLabels,
 } from "./DOM";
-
-// setBodyInnerHTML(renderGameStart());
-const initHTML = getBodyInnerHTML();
 
 const game = Game();
 
@@ -18,6 +17,7 @@ const { self } = game;
 const { rival } = game;
 
 function gameLoop({ aiEnabled = false }) {
+  const initHTML = getBodyInnerHTML();
   let { currentTurn } = game.getTurn();
   let { nextTurn } = game.getTurn();
   if (aiEnabled) {
@@ -39,9 +39,15 @@ function gameLoop({ aiEnabled = false }) {
 
   nextTurn.table.toggleAttackCursor();
 
-  renderNotification(
-    `It is <span class="${currentTurn.getId()}-victory">${currentTurn.getName()}'s</span> turn, click on <span class="${nextTurn.getId()}-victory">${nextTurn.getName()}'s</span> board to attack`
-  );
+  if (!aiEnabled) {
+    renderNotification(
+      `It is <span class="${currentTurn.getId()}-victory">${currentTurn.getName()}'s</span> turn, click on <span class="${nextTurn.getId()}-victory">${nextTurn.getName()}'s</span> board to attack`
+    );
+  } else {
+    renderNotification(
+      `<span class="${currentTurn.getId()}-victory">${currentTurn.getName()}</span> Is facing the A.I <span class="${nextTurn.getId()}-victory">${nextTurn.getName()}</span> Good luck!`
+    );
+  }
 
   currentTurn.table.toggleDisabled();
 
@@ -102,4 +108,34 @@ function gameLoop({ aiEnabled = false }) {
   });
 }
 
-gameLoop({ aiEnabled: false });
+addGameInitBtnEventListener((e) => {
+  let ai = { aiEnabled: false };
+  for (let i = 0; i < e.currentTarget.form.children.length; i += 1) {
+    const formItem = e.currentTarget.form[i];
+    if (formItem.id === "self") {
+      if (formItem.value !== "" && !(formItem.value.length >= 20)) {
+        self.setName(formItem.value);
+      } else {
+        self.setName("John Battlefield");
+      }
+    }
+    if (formItem.id === "rival") {
+      if (formItem.value !== "" && !(formItem.value.length >= 20)) {
+        rival.setName(formItem.value);
+      } else {
+        rival.setName("Rival");
+      }
+    }
+    if (formItem.id === "ai-checkbox") {
+      if (formItem.validity.valid) {
+        ai = { aiEnabled: true };
+        rival.setName(`${rival.getName()}.AI`);
+      }
+    }
+    console.log(e.currentTarget.form[i]);
+
+    setBodyInnerHTML(renderGameStart());
+    renderPlayerLabels(self.getName(), rival.getName());
+    gameLoop(ai);
+  }
+});

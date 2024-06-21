@@ -439,6 +439,7 @@ const Player = (name, tableQuerySelector) => {
   const table = Table(10, tableQuerySelector);
   let turn = false;
   let id;
+  let pName = name;
 
   function setTurn(bool) {
     turn = bool;
@@ -449,7 +450,11 @@ const Player = (name, tableQuerySelector) => {
   }
 
   function getName() {
-    return name;
+    return pName;
+  }
+
+  function setName(str) {
+    pName = str;
   }
 
   function setId(str) {
@@ -473,6 +478,7 @@ const Player = (name, tableQuerySelector) => {
     getName,
     setId,
     getId,
+    setName,
   };
 };
 

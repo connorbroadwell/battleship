@@ -54,13 +54,6 @@ const Table = (tableSize, parentQuery) => {
 
   const tableEl = getNewTableElement();
 
-  const label = document.querySelector(`${parentQuery}-label`);
-  if (parentQuery === ".battlefield-self") {
-    label.textContent = "You";
-  } else {
-    label.textContent = "Rival";
-  }
-
   function toggleDisabled() {
     document.querySelector(parentQuery).classList.toggle("disabled");
   }
@@ -189,6 +182,7 @@ const Table = (tableSize, parentQuery) => {
     addAttackEventListener,
     renderAttackResult,
     args,
+    renderPlayerLabels,
   };
 };
 
@@ -288,6 +282,19 @@ function renderGameStart() {
   return startingHTML;
 }
 
+function addGameInitBtnEventListener(gameInitEvent) {
+  document
+    .querySelector("#init-form-btn")
+    .addEventListener("click", gameInitEvent);
+}
+
+function renderPlayerLabels(selfName, rivalName) {
+  const selfLabel = document.querySelector(`.battlefield-self-label`);
+  const rivalLabel = document.querySelector(`.battlefield-rival-label`);
+  selfLabel.textContent = selfName;
+  rivalLabel.textContent = rivalName;
+}
+
 export {
   Table,
   renderNotification,
@@ -296,4 +303,6 @@ export {
   getBodyInnerHTML,
   setBodyInnerHTML,
   renderGameStart,
+  addGameInitBtnEventListener,
+  renderPlayerLabels,
 };
