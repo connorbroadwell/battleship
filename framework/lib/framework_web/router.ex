@@ -17,7 +17,7 @@ defmodule FrameworkWeb.Router do
   scope "/", FrameworkWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    get "/", PageController, :battle_ship_main_menu
   end
 
   # Other scopes may use custom stacks.

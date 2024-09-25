@@ -1,0 +1,43 @@
+<div class="body-wrap">
+  <header class="flex-col">
+    <div class="title-wrap">
+      <div class="title">
+        <span class="self-victory">Jellyship</span>
+        <span class="rival-victory">Battle</span>
+      </div>
+    </div>
+    <div class="notification-wrap">
+      <div class="notification">
+        <div class="notification-message"></div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="form-wrap">
+      <form action="" class="init-game-form">
+        <div class="init-form-item self-form">
+          <div class="self-form-header self-victory">Player 1:</div>
+          <label for="self">Name</label>
+          <input type="text" name="self" id="self" />
+        </div>
+        <div class="init-form-item rival-form">
+          <div class="rival-form-header rival-victory">Player 2:</div>
+          <label for="rival">Name</label>
+          <input type="text" name="rival" id="rival" />
+        </div>
+        <div class="init-form-item ai-form-item">
+          <div class="ai-form red">Face an A.I opponent?</div>
+          <input type="checkbox" name="ai-checkbox" id="ai-checkbox" required />
+        </div>
+        <div class="init-form-item-btn">
+          <button type="button" class="rival-victory-bg" id="init-form-btn">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+  <footer>
+    © now-forever snowjellyIndustries <span class="heart"><%= "<3" %></span>
+  </footer>
+</div>

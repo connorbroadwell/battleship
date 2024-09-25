@@ -1,9 +1,8 @@
 defmodule FrameworkWeb.PageController do
   use FrameworkWeb, :controller
 
-  def home(conn, _params) do
-    # The home page is often custom made,
-    # so skip the default app layout.
-    render(conn, :home, layout: false)
+  def battle_ship_main_menu(conn, _params) do
+    conn
+    |> render(:battle_ship_main_menu)
   end
 end
